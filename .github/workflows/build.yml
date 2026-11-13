@@ -1,4 +1,4 @@
-name: Build Snap Paint III APK and APP
+name: Build Snap Paint IV APK and APP
 
 on:
   workflow_dispatch:
@@ -8,8 +8,8 @@ on:
       - master
 
 env:
-  APP_NAME: "Snap Paint III"
-  APP_ID: com.example.snappaintiii
+  APP_NAME: "Snap Paint IV"
+  APP_ID: com.example.snappaintiv
   WEB_DIR: www
 
 jobs:
@@ -96,13 +96,13 @@ jobs:
 
       - name: Rename APK
         run: |
-          mv android/app/build/outputs/apk/debug/app-debug.apk SnapPaintIII.apk
+          mv android/app/build/outputs/apk/debug/app-debug.apk SnapPaintIV.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SnapPaintIII-android
-          path: SnapPaintIII.apk
+          name: SnapPaintIV-android
+          path: SnapPaintIV.apk
           retention-days: 30
 
   build-ios-app:
@@ -194,16 +194,16 @@ jobs:
           fi
 
           mkdir -p dist
-          rm -rf dist/SnapPaintIII.app dist/SnapPaintIII.app.zip
+          rm -rf dist/SnapPaintIV.app dist/SnapPaintIV.app.zip
 
-          cp -R "$SOURCE_APP" dist/SnapPaintIII.app
+          cp -R "$SOURCE_APP" dist/SnapPaintIV.app
 
           cd dist
-          ditto -c -k --sequesterRsrc --keepParent SnapPaintIII.app SnapPaintIII.app.zip
+          ditto -c -k --sequesterRsrc --keepParent SnapPaintIV.app SnapPaintIV.app.zip
 
       - name: Upload iOS app artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SnapPaintIII-ios
-          path: dist/SnapPaintIII.app.zip
+          name: SnapPaintIV-ios
+          path: dist/SnapPaintIV.app.zip
           retention-days: 30
