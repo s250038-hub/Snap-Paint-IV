@@ -1,14 +1,27 @@
 # 🎨 一拍即玩 SnapPaint IV
 
-**Paint-by-numbers, rebuilt as a single HTML file.**  
-Turn a photo — or an endless stream of online levels — into a numbered grid, then tap, hold, and sweep until the picture appears. Seven difficulty tiers, full-resolution photos, IndexedDB storage, offline-safe levels, and a mobile-first gesture system.
+**Paint-by-numbers from your photos, infinite levels, or a simple text prompt.**  
+One HTML file. Zero dependencies. Type `sunset`, `貓`, or `城市`, pick a result, and paint it cell by cell.
 
 [![Live Demo](https://img.shields.io/badge/▶_Play_Live-SnapPaint_IV-5EA0F2?style=for-the-badge)](https://s250038-hub.github.io/Snap-Paint-IV/)
-[![Version](https://img.shields.io/badge/version-3.2-B07CF7?style=for-the-badge)](#-version-history)
+[![Version](https://img.shields.io/badge/version-3.3-B07CF7?style=for-the-badge)](#-version-history)
 [![Single File](https://img.shields.io/badge/single_file-index.html-35D07F?style=for-the-badge)](#-quick-start)
 [![No Dependencies](https://img.shields.io/badge/dependencies-0-FFC53D?style=for-the-badge)](#-quick-start)
 
-> 單檔 HTML・零依賴・長按拖軌填色・短點單填・拖曳移動・填錯保留正確數字且不計進度・油漆桶只對正確編號啟動。
+> 單檔 HTML・零依賴・提示搜尋圖片・長按拖軌填色・短點單填・拖曳移動・填錯保留正確數字且不計進度・油漆桶只對正確編號啟動。
+
+---
+
+## 🆕 What's new in v3.3
+
+- **🔍 Prompt image search** — type a keyword and get real matching images
+- **Wikimedia Commons** as the search backend (no API key required)
+- **Thumbnail result strip** — tap any result to preview and play it
+- **Search grid size selector** — 小 64 / 中 120 / 大 200
+- **Offline themed fallback** — keyword-aware procedural art when the network fails
+- **Search works are saved** with their query and result index
+- **"Next image" flow** after completing a searched picture
+- **Gallery badges** show the search query instead of a level number
 
 ---
 
@@ -18,13 +31,13 @@ Turn a photo — or an endless stream of online levels — into a numbered grid,
 |---|---|
 | **Format** | One `index.html` — HTML + CSS + Canvas 2D + vanilla JS |
 | **Dependencies** | None. No build step, no bundler, no framework |
-| **Sources** | Your photos, or infinite seeded online levels |
+| **Sources** | Your photos, infinite seeded levels, or prompt search |
 | **Difficulty** | 7 tiers: 64 → 16,777,216 colors |
 | **Gestures** | Short tap = single fill · drag = pan · long-press = trail paint · pinch = zoom |
 | **Wrong fills** | Optional; keep the correct number on top and never count as progress |
 | **Bucket** | Only fires on the correct number |
 | **Storage** | IndexedDB with Blob storage + real device quota |
-| **Offline** | Procedural levels keep the game fully playable |
+| **Offline** | Procedural levels and themed search fallbacks keep the game playable |
 | **Privacy** | Photos are processed locally and never uploaded |
 
 ---
@@ -43,7 +56,7 @@ https://s250038-hub.github.io/Snap-Paint-IV/
 # Option 1 — open directly
 open index.html
 
-# Option 2 — serve locally (recommended for online levels)
+# Option 2 — serve locally (recommended for online search and levels)
 python3 -m http.server 8080
 # visit http://localhost:8080
 ```
@@ -75,6 +88,87 @@ No `npm install`. No config. Drop `index.html` on any static host and it runs.
 | Fit | ⛶ | Fits the whole board to the screen |
 | Reset | ↺ 重置 | Two-step confirm: tap once to arm, tap again within 3 s |
 | Number select | 編號 / 選擇 | Type a color number, then Enter or tap Select |
+
+---
+
+## 🔍 Prompt search
+
+The online screen has two modes:
+
+```text
+♾️ 關卡  |  🔍 提示搜尋
+```
+
+### How it works
+
+1. Switch to **🔍 提示搜尋**.
+2. Type a prompt, for example:
+   - `貓`
+   - `sunset`
+   - `城市`
+   - `flower`
+   - `mountain`
+3. Press Enter or tap **🔍**.
+4. Browse the thumbnail strip and tap a result.
+5. Choose a grid size and start painting.
+
+### Search backend
+
+| Source | Behavior |
+|---|---|
+| **Wikimedia Commons** | Real keyword image search via the public MediaWiki API |
+| **Offline themed art** | Deterministic procedural images derived from the prompt when search fails |
+
+The Commons request uses:
+
+```text
+action=query
+generator=search
+gsrnamespace=6          (File namespace)
+prop=imageinfo
+iiprop=url|mime|size
+iiurlwidth=640
+origin=*                (anonymous CORS)
+```
+
+Only usable raster images are kept:
+
+- `image/jpeg`, `image/png`, `image/webp`
+- Minimum source size: 160 × 160
+- Up to 18 results per search
+
+### Search grid sizes
+
+| Option | Long side | Use case |
+|---|---:|---|
+| 小 | 64 | Quick, relaxing sessions |
+| 中 | 120 | Default balanced play |
+| 大 | 200 | Detailed, longer sessions |
+
+The grid preserves the source image aspect ratio, so searched pictures are never stretched.
+
+### Offline fallback styles
+
+When Commons is unavailable, the app generates prompt-aware art:
+
+| Prompt keywords | Generated style |
+|---|---|
+| `city`, `urban`, `street`, `城市`, `街`, `夜景` | Night city |
+| `mountain`, `山`, `峰` | Mountain dawn |
+| `sea`, `ocean`, `beach`, `海`, `沙灘`, `浪` | Sunset sea |
+| `flower`, `花`, `abstract`, `抽象`, `geometry`, `幾何` | Geometric mosaic |
+| `hill`, `field`, `grass`, `草原`, `田`, `森林`, `forest`, `樹` | Rolling hills |
+| Anything else | Seeded variation of the five styles |
+
+Search results are saved as works with:
+
+```text
+mode: "search"
+query: "sunset"
+index: 3
+```
+
+After completion, the win screen offers **▶ 下一張「query」**.
 
 ---
 
@@ -134,7 +228,7 @@ The source photo itself is never capped. You choose the grid density.
 
 ---
 
-## 🌐 Online levels
+## 🌐 Infinite online levels
 
 Online levels are deterministic and unbounded.
 
@@ -212,7 +306,8 @@ Each work stores:
 - JPEG preview (Blob)
 - Correct-fill RLE mask
 - Optional wrong-fill map
-- Grid size, depth, color count, elapsed time, mode, level
+- Grid size, depth, color count, elapsed time
+- Mode, level, search query, and result index
 - Completion state
 
 Completed works keep the lossless puzzle PNG and preview, but drop the progress mask.
@@ -227,7 +322,7 @@ Completed works keep the lossless puzzle PNG and preview, but drop the progress 
 - Delete with confirmation **and undo**
 - Download completed works as PNG
 - Live artwork-only storage meter
-- Badges for mode, level, progress, completion, and difficulty
+- Badges for mode, level, search query, progress, completion, and difficulty
 
 ---
 
@@ -267,6 +362,7 @@ A visible mute control appears on the menu, game HUD, online screen, gallery, an
 |---|---|---|
 | `Enter` | Color number input | Select that color |
 | `Enter` | Level jump input | Go to level |
+| `Enter` | Search input | Run search |
 | `Esc` | Dialog / settings / viewer | Close |
 | `←` / `→` | Focused palette strip | Move one color |
 | `PageUp` / `PageDown` | Focused palette strip | Move one page |
@@ -359,7 +455,7 @@ The bucket uses an iterative scanline flood fill:
 - Photos are processed entirely in your browser.
 - No photo is uploaded to any server.
 - No account, no analytics, no cookies.
-- Online levels fetch public photos from Unsplash / Picsum CDNs.
+- Online levels and prompt search fetch public images from Wikimedia Commons, Unsplash, and Picsum.
 - Saves live in IndexedDB on your device.
 - Clearing site data removes saved works.
 - Export important works with the PNG download button.
@@ -387,6 +483,7 @@ Targets desktop Chrome / Edge / Firefox / Safari and mobile Chrome / iOS Safari.
 
 | Symptom | Fix |
 |---|---|
+| Search returns no usable images | The app falls back to offline themed art. Try a broader or English keyword. |
 | Online preview fails | Auto mode falls back to offline art. You can also set Source to **Offline** or press Retry. |
 | “儲存空間不足” | Open the gallery and delete old works. Deletion can be undone from the toast. |
 | Huge photo fails to build | Lower the resolution chip or choose a smaller color depth. |
@@ -439,13 +536,22 @@ Entry file: index.html
 | §12 | Brush, wrong fills, bucket, locate |
 | §13 | Tap / drag / long-press / pinch gestures |
 | §14–§15 | Timer, progress, reset, win; photo resolution flow |
-| §16 | Online sources, fallback chain, procedural offline art |
+| §16 | Online levels, prompt search, fallback chain, procedural art |
 | §17–§18 | Resume rebuild; gallery, viewer, delete + undo |
 | §19–§20 | Settings difficulty chips; bindings and boot |
 
 ---
 
 ## 📜 Version history
+
+### v3.3
+- Prompt image search via Wikimedia Commons
+- Thumbnail result strip and selectable results
+- Search grid size selector (64 / 120 / 200)
+- Offline prompt-themed fallback art
+- Search works saved with query and index
+- “Next image” completion flow
+- Search-query gallery badges
 
 ### v3.2
 - Wrong fills keep the correct number visible and never count as progress
@@ -488,6 +594,7 @@ Entry file: index.html
 
 ## 🙏 Credits
 
+- Prompt search: [Wikimedia Commons](https://commons.wikimedia.org/) via the public MediaWiki API
 - Online photos: [Unsplash](https://unsplash.com/) and [Lorem Picsum](https://picsum.photos/)
 - Procedural offline art: generated in-app with Canvas 2D
 - Icons: native emoji and inline SVG
