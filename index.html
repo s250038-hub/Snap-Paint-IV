@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>一拍即玩 SnapPaint｜無限關卡・全解析度・大容量</title>
+<title>一拍即玩 SnapPaint｜長按拖軌・短點單填・設定</title>
 <style>
 :root{
   --bg:#0E131B;--panel:#161D27;--panel2:#1C2532;--line:rgba(255,255,255,.08);
@@ -126,11 +126,14 @@ body.bucket-on:not(.painting) #canvas-container{cursor:none}
 body.bucket-on:not(.painting) #tool-cursor{display:block}
 body.painting #tool-cursor{display:none!important}
 .pr-head{fill:var(--tool-color)}.pr-stripes{fill:rgba(255,255,255,.45)}
+#paint-ring{position:absolute;left:0;top:0;width:58px;height:58px;margin:-29px 0 0 -29px;border:3px solid var(--tool-color);border-radius:50%;pointer-events:none;z-index:6;display:none;box-shadow:0 0 0 3px rgba(255,255,255,.18),0 0 18px var(--tool-color);animation:ringPulse 1s ease-in-out infinite}
+#paint-ring::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:var(--tool-color)}
+@keyframes ringPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
 #bottom-panel{background:var(--panel);border-top:1px solid var(--line);padding:6px 10px calc(10px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px;z-index:10;flex-shrink:0}
 .strip-info{display:flex;align-items:center;gap:8px;font-size:.72rem;color:var(--muted);padding:0 2px}
 .strip-info .si-left{font-weight:700;letter-spacing:.5px}
 .strip-info .si-right{margin-left:auto;font-family:var(--mono)}
-#btn-locate{padding:4px 10px;font-size:.72rem;border-radius:8px}
+#btn-locate,#btn-fit{padding:4px 10px;font-size:.72rem;border-radius:8px}
 #palette-viewport{overflow:hidden;position:relative;height:78px;touch-action:none;cursor:grab;outline:none}
 #palette-viewport.dragging{cursor:grabbing}
 #palette-inner{position:relative;height:78px}
@@ -188,8 +191,9 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
 .gi-resume{display:block;width:100%;padding:10px 0;border:none;background:linear-gradient(160deg,var(--accent),var(--accent-deep));color:#fff;font-weight:800;font-size:.9rem;cursor:pointer;letter-spacing:2px;flex-shrink:0;margin-top:auto}
 .gi-resume:hover{filter:brightness(1.08)}
 .empty-msg{grid-column:1/-1;text-align:center;color:var(--muted);margin-top:60px;line-height:1.8}
-.overlay{position:fixed;inset:0;background:rgba(7,10,15,.88);backdrop-filter:blur(6px);color:#fff;display:none;justify-content:center;align-items:center;flex-direction:column;z-index:100;padding:20px;text-align:center}
+.overlay{position:fixed;inset:0;background:rgba(7,10,15,.9);backdrop-filter:blur(6px);color:#fff;display:none;justify-content:center;align-items:center;flex-direction:column;z-index:100;padding:20px;text-align:center}
 .overlay.active{display:flex;animation:screenIn .25s ease}
+#overlay-settings{justify-content:flex-start;overflow-y:auto}
 .dots{display:flex;gap:10px;margin-bottom:18px}
 .dots i{width:14px;height:14px;border-radius:4px;animation:bob 1.2s ease-in-out infinite}
 .dots i:nth-child(1){background:var(--bad)}.dots i:nth-child(2){background:var(--warn);animation-delay:.15s}.dots i:nth-child(3){background:var(--good);animation-delay:.3s}.dots i:nth-child(4){background:var(--accent);animation-delay:.45s}
@@ -219,6 +223,17 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
 .ws-row b{color:var(--text)}
 .ws-warn{color:var(--warn)!important}
 #confirm-desc{color:var(--muted);max-width:300px;line-height:1.7;margin-bottom:18px;font-size:.92rem}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;max-width:440px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;text-align:left}
+.set-row .txt b{display:block;font-size:.92rem}
+.set-row .txt small{color:var(--muted);font-size:.72rem;line-height:1.5}
+.switch{position:relative;width:52px;height:30px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.switch .sl{position:absolute;inset:0;background:var(--panel2);border:1px solid var(--line);border-radius:999px;transition:.2s;cursor:pointer}
+.switch .sl::before{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:var(--muted);transition:.2s}
+.switch input:checked+.sl{background:var(--good);border-color:var(--good)}
+.switch input:checked+.sl::before{transform:translateX(22px);background:#fff}
+.guide{width:100%;max-width:440px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;text-align:left;color:var(--muted);font-size:.78rem;line-height:1.9;margin-bottom:10px}
+.guide b{color:var(--text)}
 #toast{position:fixed;bottom:21%;left:50%;transform:translateX(-50%) translateY(8px);background:rgba(12,16,24,.94);border:1px solid var(--line);color:#fff;padding:10px 20px;border-radius:999px;font-size:.9rem;z-index:300;display:none;pointer-events:none;box-shadow:0 8px 22px rgba(0,0,0,.5);white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
 #toast.show{display:flex;align-items:center;gap:12px;animation:toastIn .25s ease forwards}
 #toast.has-action{pointer-events:auto}
@@ -236,7 +251,7 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
   <div class="col">
     <div class="logo-strip"><i></i><i></i><i></i><i></i><i></i></div>
     <h1>一拍即玩<small>SNAPPAINT</small></h1>
-    <p class="tag">📸 照片切成編號方格，選色填滿重現原作。<br>🌐 無限線上關卡・🖼️ 完整原圖解析度。<br>🎚️ 七段色深・💾 IndexedDB 大容量儲存。</p>
+    <p class="tag">📸 照片切成編號方格，選色填滿重現原作。<br>👆 短點單填・🖐️ 拖曳移動・⏱️ 長按拖軌填色。<br>🌐 無限線上關卡・💾 IndexedDB 大容量。</p>
     <div class="storage-bar">
       <div class="storage-label"><span>📦 作品儲存</span><b id="menu-storage-text">計算中…</b></div>
       <div class="storage-track"><div class="storage-fill" id="menu-storage-fill" style="width:0%"></div></div>
@@ -246,7 +261,8 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
     <button class="btn" id="btn-new-game">📷 即影即玩 / 🖼️ 從相簿選擇</button>
     <button class="btn btn-good" id="resume-btn" style="display:none"></button>
     <button class="btn btn-ghost" id="btn-gallery">🏆 我的作品</button>
-    <p class="menu-foot">v3.0・IndexedDB 大容量・空作品庫＝0 B・離線備援關卡</p>
+    <button class="btn btn-ghost" id="btn-settings">⚙️ 設定</button>
+    <p class="menu-foot">v3.1・長按拖軌・短點單填・填錯開關・難度移入設定</p>
   </div>
   <input type="file" id="file-input" accept="image/*" style="display:none">
 </div>
@@ -266,11 +282,10 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
       <button class="chip" data-pct="6.25">1/16x</button>
       <button class="chip" data-pct="3.125">1/32x</button>
     </div>
-    <div class="setup-label">🎚️ 色深難度</div>
-    <div class="depth-chips"></div>
+    <button class="btn btn-ghost" id="res-settings">⚙️ 難度／填錯／音效（設定）</button>
     <button class="btn" id="btn-start-game">🎨 開始挑戰</button>
     <button class="btn btn-ghost" id="btn-res-back">返回</button>
-    <p class="res-hint">💡 原圖完整保留、不裁切縮小。1x＝每像素一格。<br>🖌️ 單指/左鍵拖曳＝填色・雙指/右鍵＝移動・滾輪＝縮放・雙擊＝全覽</p>
+    <p class="res-hint">💡 原圖完整保留、不裁切縮小。1x＝每像素一格。<br>👆 短點＝單填・🖐️ 拖曳＝移動・⏱️ 長按＝拖軌填色・🤏 雙指＝縮放・⛶＝全覽</p>
   </div>
 </div>
 
@@ -278,6 +293,7 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
   <div class="hud">
     <button class="icon-btn" id="btn-online-back">‹ 返回</button>
     <span class="title-mini">🌐 線上關卡 ∞</span>
+    <button class="icon-btn" id="online-settings" aria-label="設定">⚙️</button>
     <button class="icon-btn snd-btn" aria-label="音效開關">🔊</button>
   </div>
   <div class="online-body scrollable">
@@ -318,10 +334,8 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
         <button class="icon-btn" id="online-go">前往</button>
         <button class="icon-btn" id="online-random" title="隨機關卡">🎲</button>
       </div>
-      <div class="setup-label">🎚️ 色深難度</div>
-      <div class="depth-chips"></div>
       <button class="btn btn-web" id="btn-start-online" disabled>⏳ 載入關卡…</button>
-      <p class="res-hint">♾️ 關卡無限：尺寸隨關卡遞增。來源：Unsplash／Picsum；<br>無法連線時自動改用離線生成關卡，永遠可玩。</p>
+      <p class="res-hint">♾️ 關卡無限：尺寸隨關卡遞增。難度請到 ⚙️ 設定調整。<br>無法連線時自動改用離線生成關卡，永遠可玩。</p>
     </div>
   </div>
 </div>
@@ -344,6 +358,7 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
   </div>
   <div id="canvas-container">
     <canvas id="main-canvas"></canvas>
+    <div id="paint-ring"></div>
     <svg id="tool-cursor" viewBox="0 0 24 24" aria-hidden="true">
       <rect class="pr-head" x="2.5" y="2.5" width="13" height="6" rx="2.4"/>
       <rect class="pr-stripes" x="4.2" y="2.5" width="1.6" height="6"/>
@@ -357,6 +372,7 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
     <div class="strip-info">
       <span class="si-left" id="strip-depth"></span>
       <span class="si-right" id="strip-remaining"></span>
+      <button class="icon-btn" id="btn-fit" title="全覽／回正">⛶</button>
       <button class="icon-btn" id="btn-locate">🔍 找格</button>
     </div>
     <div id="palette-viewport" tabindex="0"><div id="palette-inner"></div></div>
@@ -393,6 +409,31 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
     </div>
   </div>
   <div id="gallery-grid"></div>
+</div>
+
+<div id="overlay-settings" class="overlay">
+  <div class="col">
+    <h2 class="screen-title">⚙️ 設定</h2>
+    <div class="set-row">
+      <div class="txt"><b>🔊 音效／震動</b><small>填色、完成、勝利提示音與震動</small></div>
+      <label class="switch"><input type="checkbox" id="set-sound"><span class="sl"></span></label>
+    </div>
+    <div class="set-row">
+      <div class="txt"><b>🎨 允許填錯顏色</b><small>關閉時點錯編號沒有任何反應（預設關閉）。<br>開啟後可把任意格填上目前選擇的顏色。</small></div>
+      <label class="switch"><input type="checkbox" id="set-wrong"><span class="sl"></span></label>
+    </div>
+    <div class="setup-label">🎚️ 色深難度（下一場生效）</div>
+    <div class="depth-chips"></div>
+    <div class="guide">
+      <b>👆 短點</b>＝單格填色<br>
+      <b>🖐️ 短按後拖曳</b>＝移動畫面<br>
+      <b>⏱️ 長按（出現圓圈）</b>＝拖軌連續填色<br>
+      <b>🤏 雙指</b>＝縮放／移動・<b>⛶</b>＝全覽回正<br>
+      <b>🪣 油漆筒</b>＝同編號相連區域整片填滿<br>
+      點錯編號不會閃燈；是否可填錯於上方開關。
+    </div>
+    <button class="btn" id="btn-settings-close">✔ 完成</button>
+  </div>
 </div>
 
 <div id="overlay-loading" class="overlay">
@@ -453,6 +494,7 @@ const LS_SET='snapPaintSettingsV2',LS_WORKS='snapPaintWorksV2',LS_OLD='snapPaint
 const WARN_PCT=.85,BLOCK_PCT=.95;
 const HARD_CELLS=16000000,SOFT_CELLS=1000000,AUTO_CELLS=150000;
 const PCTS=[100,50,25,12.5,6.25,3.125],ITEM_W=64;
+const LONG_MS=320,MOVE_PX=8;
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const DEPTHS=[
  {L:4,name:'簡單',en:'EASY',icon:'🙂',c:'#3ECF8E'},
@@ -474,8 +516,8 @@ function formatBytes(b){b=Number(b)||0;if(b<1024)return b+' B';if(b<1048576)retu
 function dataURLtoBlob(u){const i=u.indexOf(',');const meta=u.slice(0,i),b64=u.slice(i+1);const mime=(meta.match(/data:([^;]+)/)||[])[1]||'image/png';const bin=atob(b64);const a=new Uint8Array(bin.length);for(let k=0;k<bin.length;k++)a[k]=bin.charCodeAt(k);return new Blob([a],{type:mime});}
 function canvasBlob(c,type,q){return new Promise(res=>{try{c.toBlob(b=>res(b||dataURLtoBlob(c.toDataURL(type,q))),type,q);}catch(e){res(dataURLtoBlob(c.toDataURL(type,q)));}});}
 
-/* §2 settings (tiny, localStorage) */
-let settings={depth:16,muted:false,onlineLevel:1,done:[],srcMode:'auto',lastGood:'',best:0};
+/* §2 settings */
+let settings={depth:16,muted:false,onlineLevel:1,done:[],srcMode:'auto',lastGood:'',best:0,allowWrong:false};
 try{const s=JSON.parse(localStorage.getItem(LS_SET)||'null');if(s&&typeof s==='object')settings=Object.assign(settings,s);}catch(e){}
 let depth=DEPTHS.some(d=>d.L===settings.depth)?settings.depth:16;
 let muted=!!settings.muted;
@@ -484,7 +526,7 @@ let onlineDone=new Set(Array.isArray(settings.done)?settings.done:[]);
 let onlineBest=settings.best|0||0;
 function saveSettings(){settings.depth=depth;settings.muted=muted;settings.onlineLevel=onlineLevel;settings.done=Array.from(onlineDone);settings.best=onlineBest;try{localStorage.setItem(LS_SET,JSON.stringify(settings));}catch(e){}}
 
-/* §3 IndexedDB storage + cache + migration + quota */
+/* §3 IndexedDB */
 let db=null,worksCache=[],quota=0,persistRequested=false;
 function openDB(){return new Promise((res,rej)=>{const rq=indexedDB.open(DB_NAME,DB_VER);rq.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'id'});};rq.onsuccess=()=>{db=rq.result;res(db);};rq.onerror=()=>rej(rq.error);});}
 function st(mode){return db.transaction(STORE,mode).objectStore(STORE);}
@@ -522,19 +564,18 @@ function updateStorageUI(){const used=worksBytes(),pct=Math.min(100,Math.round(s
 function checkStorageAvailable(){const r=storageRatio();if(r>=BLOCK_PCT){showStorageWarn();return false;}if(r>=WARN_PCT)showToast('⚠️ 儲存空間較少，建議整理作品庫');return true;}
 function showStorageWarn(){$('warn-used').textContent=formatBytes(worksBytes());$('warn-free').textContent=formatBytes(Math.max(0,quota-worksBytes()));$('warn-count').textContent=loadWorks().length+' 幅';showOverlay('overlay-storage-warn');}
 
-/* §5 audio & haptics */
-let AC=null,lastPaintSnd=0,lastWrongSnd=0;
+/* §5 audio */
+let AC=null,lastPaintSnd=0;
 function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC;}
 function tone(f,d,type,g,delay,slide){if(muted)return;const a=ac();if(!a)return;try{const t=a.currentTime+(delay||0),o=a.createOscillator(),gn=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(40,f+slide),t+d);gn.gain.setValueAtTime(g||.06,t);gn.gain.exponentialRampToValueAtTime(.0008,t+d);o.connect(gn).connect(a.destination);o.start(t);o.stop(t+d+.02);}catch(e){}}
 function vibrate(p){if(!muted&&navigator.vibrate){try{navigator.vibrate(p);}catch(e){}}}
 function sndPaint(){const n=performance.now();if(n-lastPaintSnd<40)return;lastPaintSnd=n;tone(500+Math.random()*140,.05,'triangle',.045);}
-function sndWrong(){const n=performance.now();if(n-lastWrongSnd<160)return;lastWrongSnd=n;tone(130,.09,'square',.05);vibrate(12);}
 function sndBucket(){tone(260,.12,'sawtooth',.05,0,340);}
 function sndColor(){tone(660,.09,'sine',.06);tone(880,.12,'sine',.06,.09);vibrate(15);}
 function sndWin(){[523,659,784,1046,1318].forEach((f,i)=>tone(f,.16,'triangle',.07,i*.1));vibrate([25,40,60]);}
 function sndUI(){tone(760,.03,'sine',.03);}
 function setMuted(m){muted=m;saveSettings();updateSoundUI();if(!m)sndUI();}
-function updateSoundUI(){document.querySelectorAll('.snd-btn').forEach(b=>{b.textContent=muted?'🔇':'🔊';b.setAttribute('aria-pressed',muted?'true':'false');});}
+function updateSoundUI(){document.querySelectorAll('.snd-btn').forEach(b=>{b.textContent=muted?'🔇':'🔊';b.setAttribute('aria-pressed',muted?'true':'false');});const sw=$('set-sound');if(sw)sw.checked=!muted;}
 
 /* §6 confetti */
 let confettiRAF=0;
@@ -547,14 +588,14 @@ const view={scale:1,tx:0,ty:0};
 let dirty=true,bucketOn=false;
 let stage=null,cvs=null,ctx=null,numLayer=null,numCtx=null,effScale=1;
 let numSig='',numCursor=0,numTotalVis=0,dirtyBox=null;
-const flashes=[],lastFlash=new Map();
-let painting=false,panning=false,pinch=null,panStart=null,lastPaint=-1,lastTap={t:0,x:0,y:0};
+const flashes=[];
+let gesture=null,pinch=null;
 const pointers=new Map();
 let timerId=null,saveQueued=false,lastPersistTs=0,saveWarned=false,lastSaveOk=true,persistBusy=false;
 let resetArmed=false,resetArmT=null;
 let stripOffset=0,stripAnim=null;
 
-/* §8 palette Fenwick + virtual strip + custom scrollbar */
+/* §8 palette */
 function fwBuild(){const n=P.pal.count,t=new Uint32Array(n+1);let act=0;for(let i=1;i<=n;i++){const v=P.pal.remaining[i-1]>0?1:0;act+=v;t[i]+=v;const j=i+(i&-i);if(j<=n)t[j]+=t[i];}P.fw=t;P.activeCount=act;let hb=1;while(hb*2<=n)hb*=2;P.fwHB=hb;}
 function fwAdd(pi,d){for(let i=pi+1;i<=P.pal.count;i+=i&-i)P.fw[i]+=d;}
 function fwPrefix(k){let s=0;for(let i=k;i>0;i-=i&-i)s+=P.fw[i];return s;}
@@ -574,7 +615,7 @@ function selectNumFromInput(){if(!P)return;const v=parseInt($('num-input').value
 function colorFinished(pi){fwAdd(pi,-1);P.activeCount--;const before=fwPrefix(pi+1);if(before<stripOffset)stripOffset-=1;const el=stripPool.get(pi);if(el){el.remove();stripPool.delete(pi);}sndColor();if(P.selected===pi&&P.activeCount>0){let r=before+1;if(r>P.activeCount)r=1;const nj=fwSelect(r);select(nj,true);showToast(`✅ 完成一色！已切換至編號 ${nj+1}`);}scheduleStrip();updateStripInfo();}
 function updateStripInfo(){if(!P)return;const d=depthInfo(P.depth);$('strip-depth').textContent=`${d.icon} ${d.name}・${fmt(P.pal.count)} 色`;$('strip-remaining').textContent=`未完成 ${fmt(P.activeCount)} 色`;}
 function setupPaletteStrip(){const vp=$('palette-viewport'),track=$('palette-track');let drag=null;
- vp.addEventListener('pointerdown',e=>{if(!P||e.button!==0&&e.pointerType==='mouse')return;try{vp.setPointerCapture(e.pointerId);}catch(err){}drag={x:e.clientX,off:stripOffset,moved:false};stripAnim=null;});
+ vp.addEventListener('pointerdown',e=>{if(!P||(e.pointerType==='mouse'&&e.button!==0))return;try{vp.setPointerCapture(e.pointerId);}catch(err){}drag={x:e.clientX,off:stripOffset,moved:false};stripAnim=null;});
  vp.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x;if(Math.abs(dx)>6){drag.moved=true;vp.classList.add('dragging');}if(drag.moved){stripOffset=drag.off-dx/ITEM_W;scheduleStrip();}});
  const up=e=>{if(!drag)return;const wasDrag=drag.moved;const x=e.clientX;drag=null;vp.classList.remove('dragging');if(!wasDrag&&P){const rect=vp.getBoundingClientRect();const rank=Math.floor(stripOffset+(x-rect.left)/ITEM_W);if(rank>=0&&rank<P.activeCount){select(fwSelect(rank+1),false);sndUI();}}};
  vp.addEventListener('pointerup',up);vp.addEventListener('pointercancel',()=>{drag=null;vp.classList.remove('dragging');});
@@ -600,7 +641,7 @@ async function buildNewPuzzle(img,cols,rows,L,meta){setLoad('正在把照片切�
 function encodeRLE(arr){const parts=[];let i=0;const len=arr.length;while(i<len){const v=arr[i];let c=1;while(i+c<len&&arr[i+c]===v&&c<255)c++;parts.push(String.fromCharCode(v,c));i+=c;}return btoa(parts.join(''));}
 function decodeRLE(str,total){const bin=atob(str),arr=new Uint8Array(total);let i=0,out=0;while(i+1<bin.length){const v=bin.charCodeAt(i),c=bin.charCodeAt(i+1);i+=2;for(let k=0;k<c&&out<total;k++)arr[out++]=v;}return arr;}
 
-/* §10 persistence (IndexedDB, Blobs) */
+/* §10 persistence */
 function curElapsedMs(){return P?P.elapsedMs+(P.runTs?Date.now()-P.runTs:0):0;}
 function requestPersist(){saveQueued=true;}
 function persistNow(){saveQueued=false;lastPersistTs=performance.now();persistWork();}
@@ -626,29 +667,52 @@ function render(){if(!P||!ctx)return;const m=metrics();if(m.W<=0||m.H<=0){dirty=
  if(numCursor<numTotalVis)dirty=true;}
 (function loop(){if(stripAnim){const t=(performance.now()-stripAnim.t0)/stripAnim.dur;if(t>=1){stripOffset=stripAnim.to;stripAnim=null;}else{const e=1-Math.pow(1-t,3);stripOffset=stripAnim.from+(stripAnim.to-stripAnim.from)*e;}renderStrip();}if(dirty){dirty=false;render();}if(saveQueued&&performance.now()-lastPersistTs>=1200)persistNow();requestAnimationFrame(loop);})();
 
-/* §12 painting */
-function cellFromEvent(e){const rect=stage.getBoundingClientRect(),m=metrics();const c=Math.floor((e.clientX-rect.left-m.dx)/m.cell),r=Math.floor((e.clientY-rect.top-m.dy)/m.cell);if(c<0||r<0||c>=P.cols||r>=P.rows)return null;return{c,r};}
-function paintAt(e){if(!P||P.selected<0||P.isCompleted)return;const cell=cellFromEvent(e);if(!cell)return;const i=cell.r*P.cols+cell.c;if(i===lastPaint)return;lastPaint=i;if(P.filled[i])return;if(P.indexMap[i]!==P.selected){flashWrong(cell,i);return;}if(bucketOn)floodFill(cell.c,cell.r,P.indexMap[i]);else paintSingleCell(cell.c,cell.r);}
-function flashWrong(cell,i){const now=performance.now(),t=lastFlash.get(i);if(t===undefined||now-t>700){lastFlash.set(i,now);if(lastFlash.size>4096)lastFlash.delete(lastFlash.keys().next().value);if(flashes.length>256)flashes.shift();flashes.push({c:cell.c,r:cell.r,t:now,dur:320,rgb:'255,95,84'});dirty=true;sndWrong();}}
+/* §12 painting (wrong-color optional, no flash) */
+function cellFromXY(x,y){const rect=stage.getBoundingClientRect(),m=metrics();const c=Math.floor((x-rect.left-m.dx)/m.cell),r=Math.floor((y-rect.top-m.dy)/m.cell);if(c<0||r<0||c>=P.cols||r>=P.rows)return null;return{c,r};}
+let lastPaint=-1;
+function paintAtXY(x,y){if(!P||P.selected<0||P.isCompleted)return;const cell=cellFromXY(x,y);if(!cell)return;const i=cell.r*P.cols+cell.c;if(i===lastPaint)return;lastPaint=i;if(P.filled[i])return;const pi=P.indexMap[i];if(pi!==P.selected&&!settings.allowWrong)return;if(bucketOn)floodFill(cell.c,cell.r,pi);else paintSingleCell(cell.c,cell.r);}
 function afterPaint(pi){dirty=true;const el=stripPool.get(pi);if(el)refreshStripItem(pi,el);updateProgress();requestPersist();if(P.pal.remaining[pi]<=0)colorFinished(pi);if(P.filledCount===P.total)win();}
-function paintSingleCell(c,r){const{cols,indexMap,filled,pal,workImg}=P;const i=r*cols+c,pi=indexMap[i],[cr,cg,cb]=palRGB(pi),d=workImg.data,o=i*4;filled[i]=1;d[o]=cr;d[o+1]=cg;d[o+2]=cb;P.filledCount++;pal.remaining[pi]--;markDirty(c,r,1,1);sndPaint();afterPaint(pi);}
-function floodFill(c0,r0,pi){const{cols,rows,indexMap,filled,workImg}=P;const[cr,cg,cb]=palRGB(pi),d=workImg.data;const st=[r0*cols+c0];let count=0,minX=c0,maxX=c0,minY=r0,maxY=r0;while(st.length){const s=st.pop();if(filled[s]||indexMap[s]!==pi)continue;const r=(s/cols)|0;let i=s;while(i%cols>0&&!filled[i-1]&&indexMap[i-1]===pi)i--;const up=r>0,dn=r<rows-1;while(i%cols<cols&&!filled[i]&&indexMap[i]===pi){filled[i]=1;const o=i*4;d[o]=cr;d[o+1]=cg;d[o+2]=cb;count++;const c=i%cols;if(c<minX)minX=c;if(c>maxX)maxX=c;if(r<minY)minY=r;if(r>maxY)maxY=r;if(up){const u=i-cols;if(!filled[u]&&indexMap[u]===pi)st.push(u);}if(dn){const w=i+cols;if(!filled[w]&&indexMap[w]===pi)st.push(w);}i++;}}if(!count)return;P.filledCount+=count;P.pal.remaining[pi]-=count;markDirty(minX,minY,maxX-minX+1,maxY-minY+1);sndBucket();afterPaint(pi);}
+function paintSingleCell(c,r){const{cols,indexMap,filled,workImg}=P;const i=r*cols+c,pi=indexMap[i],[cr,cg,cb]=palRGB(P.selected),d=workImg.data,o=i*4;filled[i]=1;d[o]=cr;d[o+1]=cg;d[o+2]=cb;P.filledCount++;P.pal.remaining[pi]--;markDirty(c,r,1,1);sndPaint();afterPaint(pi);}
+function floodFill(c0,r0,regionPi){const{cols,rows,indexMap,filled,workImg}=P;const[cr,cg,cb]=palRGB(P.selected),d=workImg.data;const st=[r0*cols+c0];let count=0,minX=c0,maxX=c0,minY=r0,maxY=r0;while(st.length){const s=st.pop();if(filled[s]||indexMap[s]!==regionPi)continue;const r=(s/cols)|0;let i=s;while(i%cols>0&&!filled[i-1]&&indexMap[i-1]===regionPi)i--;const up=r>0,dn=r<rows-1;while(i%cols<cols&&!filled[i]&&indexMap[i]===regionPi){filled[i]=1;const o=i*4;d[o]=cr;d[o+1]=cg;d[o+2]=cb;count++;const c=i%cols;if(c<minX)minX=c;if(c>maxX)maxX=c;if(r<minY)minY=r;if(r>maxY)maxY=r;if(up){const u=i-cols;if(!filled[u]&&indexMap[u]===regionPi)st.push(u);}if(dn){const w=i+cols;if(!filled[w]&&indexMap[w]===regionPi)st.push(w);}i++;}}if(!count)return;P.filledCount+=count;P.pal.remaining[regionPi]-=count;markDirty(minX,minY,maxX-minX+1,maxY-minY+1);sndBucket();afterPaint(regionPi);}
 function locate(){if(!P||P.selected<0){showToast('請先選擇顏色');return;}const pi=P.selected;if(P.pal.remaining[pi]<=0){showToast('此色已完成 ✓');return;}const n=P.total,start=(Math.random()*n)|0;let found=-1;for(let k=0;k<n;k++){const i=(start+k)%n;if(!P.filled[i]&&P.indexMap[i]===pi){found=i;break;}}if(found<0){showToast('找不到未填格子');return;}const c=found%P.cols,r=(found/P.cols)|0;const base=Math.min(stage.clientWidth/P.cols,stage.clientHeight/P.rows);const ns=clamp(48/base,1,maxScale()),cell2=base*ns;view.scale=ns;view.tx=stage.clientWidth/2-(c+.5)*cell2-(stage.clientWidth-P.cols*cell2)/2;view.ty=stage.clientHeight/2-(r+.5)*cell2-(stage.clientHeight-P.rows*cell2)/2;applyView();flashes.push({c,r,t:performance.now(),dur:1100,rgb:'62,208,127'});dirty=true;sndUI();}
 function toggleBucket(){bucketOn=!bucketOn;setToolColor();updateBucketUI();showToast(bucketOn?'🪣 油漆筒開啟：同編號相連區域整片填滿':'🖌️ 油漆筒關閉：單格填色');}
 function updateBucketUI(){document.body.classList.toggle('bucket-on',bucketOn);$('tool-btn').classList.toggle('active',bucketOn);$('tool-btn').setAttribute('aria-pressed',bucketOn?'true':'false');}
 
-/* §13 gestures */
+/* §13 gestures: tap=single, drag=pan, long-press=trail paint w/ ring */
 function setPaintUI(v){document.body.classList.toggle('painting',!!v);}
+function showRing(x,y){const r=$('paint-ring'),rect=stage.getBoundingClientRect();r.style.display='block';r.style.left=(x-rect.left)+'px';r.style.top=(y-rect.top)+'px';}
+function hideRing(){$('paint-ring').style.display='none';}
 function moveToolCursor(e){const rect=stage.getBoundingClientRect(),tc=$('tool-cursor');tc.style.left=(e.clientX-rect.left)+'px';tc.style.top=(e.clientY-rect.top)+'px';}
 function zoomAt(px,py,factor){const m=metrics(),u=(px-m.dx)/m.cell,v=(py-m.dy)/m.cell;const ns=clamp(view.scale*factor,1,maxScale()),cell2=m.base*ns;view.scale=ns;view.tx=px-u*cell2-(m.W-P.cols*cell2)/2;view.ty=py-v*cell2-(m.H-P.rows*cell2)/2;applyView();}
-function setupStage(){stage=$('canvas-container');const startPan=e=>{panning=true;panStart={x:e.clientX,y:e.clientY,tx:view.tx,ty:view.ty};};const startPinch=()=>{painting=false;setPaintUI(false);panning=false;panStart=null;const[a,b]=[...pointers.values()],rect=stage.getBoundingClientRect();const mid={x:(a.x+b.x)/2-rect.left,y:(a.y+b.y)/2-rect.top},m=metrics();pinch={d0:Math.hypot(a.x-b.x,a.y-b.y)||1,s0:view.scale,u:(mid.x-m.dx)/m.cell,v:(mid.y-m.dy)/m.cell};};
- stage.addEventListener('pointerdown',e=>{if(!P)return;try{stage.setPointerCapture(e.pointerId);}catch(err){}pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===2){startPinch();return;}if(pointers.size!==1)return;if(e.button===2||e.button===1){startPan(e);return;}if(e.pointerType==='touch'){painting=true;setPaintUI(true);lastPaint=-1;paintAt(e);return;}moveToolCursor(e);if(bucketOn){painting=true;setPaintUI(true);lastPaint=-1;paintAt(e);return;}const cell=cellFromEvent(e),i=cell?cell.r*P.cols+cell.c:-1;const canPaint=i>=0&&P.selected>=0&&!P.filled[i]&&P.indexMap[i]===P.selected&&!P.isCompleted;if(canPaint){painting=true;setPaintUI(true);lastPaint=-1;paintAt(e);}else startPan(e);});
- stage.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId)){if(P&&e.pointerType==='mouse'&&bucketOn&&!painting)moveToolCursor(e);return;}const pt=pointers.get(e.pointerId);pt.x=e.clientX;pt.y=e.clientY;if(pinch&&pointers.size>=2){const[a,b]=[...pointers.values()],rect=stage.getBoundingClientRect();const d=Math.hypot(a.x-b.x,a.y-b.y)||1;const mid={x:(a.x+b.x)/2-rect.left,y:(a.y+b.y)/2-rect.top};const m=metrics(),ns=clamp(pinch.s0*d/pinch.d0,1,maxScale()),cell2=m.base*ns;view.scale=ns;view.tx=mid.x-pinch.u*cell2-(m.W-P.cols*cell2)/2;view.ty=mid.y-pinch.v*cell2-(m.H-P.rows*cell2)/2;applyView();}else if(panning&&panStart){view.tx=panStart.tx+(e.clientX-panStart.x);view.ty=panStart.ty+(e.clientY-panStart.y);applyView();}else if(painting&&pointers.size===1){if(e.pointerType==='mouse')moveToolCursor(e);if(!bucketOn)lastPaint=-1;paintAt(e);}});
- const endPointer=e=>{if(!pointers.has(e.pointerId))return;const wasPainting=painting&&pointers.size===1;pointers.delete(e.pointerId);if(pointers.size<2&&pinch){pinch=null;if(pointers.size===1){painting=false;setPaintUI(false);panning=false;panStart=null;}}if(pointers.size===0){painting=false;setPaintUI(false);panning=false;panStart=null;if(saveQueued)persistNow();if(wasPainting&&e.pointerType!=='mouse'){const now=Date.now();if(now-lastTap.t<320&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<30)resetView();lastTap={t:now,x:e.clientX,y:e.clientY};}}};
+function clearGesture(){if(gesture&&gesture.timer)clearTimeout(gesture.timer);gesture=null;hideRing();setPaintUI(false);}
+function setupStage(){stage=$('canvas-container');
+ const startPinch=()=>{clearGesture();const[a,b]=[...pointers.values()],rect=stage.getBoundingClientRect();const mid={x:(a.x+b.x)/2-rect.left,y:(a.y+b.y)/2-rect.top},m=metrics();pinch={d0:Math.hypot(a.x-b.x,a.y-b.y)||1,s0:view.scale,u:(mid.x-m.dx)/m.cell,v:(mid.y-m.dy)/m.cell};};
+ stage.addEventListener('pointerdown',e=>{if(!P)return;try{stage.setPointerCapture(e.pointerId);}catch(err){}pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pointers.size===2){startPinch();return;}
+  if(pointers.size!==1)return;
+  if(e.button===2||e.button===1){gesture={id:e.pointerId,mode:'pan',sx:e.clientX,sy:e.clientY,tx:view.tx,ty:view.ty};return;}
+  gesture={id:e.pointerId,mode:'pending',sx:e.clientX,sy:e.clientY,cx:e.clientX,cy:e.clientY,tx:view.tx,ty:view.ty,timer:null};
+  gesture.timer=setTimeout(()=>{if(gesture&&gesture.mode==='pending'){gesture.mode='paint';setPaintUI(true);showRing(gesture.cx,gesture.cy);lastPaint=-1;paintAtXY(gesture.cx,gesture.cy);vibrate(8);}},LONG_MS);
+ });
+ stage.addEventListener('pointermove',e=>{
+  if(!pointers.has(e.pointerId)){if(P&&e.pointerType==='mouse'&&bucketOn&&!gesture)moveToolCursor(e);return;}
+  const pt=pointers.get(e.pointerId);pt.x=e.clientX;pt.y=e.clientY;
+  if(gesture&&gesture.id===e.pointerId){gesture.cx=e.clientX;gesture.cy=e.clientY;}
+  if(pinch&&pointers.size>=2){const[a,b]=[...pointers.values()],rect=stage.getBoundingClientRect();const d=Math.hypot(a.x-b.x,a.y-b.y)||1;const mid={x:(a.x+b.x)/2-rect.left,y:(a.y+b.y)/2-rect.top};const m=metrics(),ns=clamp(pinch.s0*d/pinch.d0,1,maxScale()),cell2=m.base*ns;view.scale=ns;view.tx=mid.x-pinch.u*cell2-(m.W-P.cols*cell2)/2;view.ty=mid.y-pinch.v*cell2-(m.H-P.rows*cell2)/2;applyView();return;}
+  if(!gesture||gesture.id!==e.pointerId)return;
+  if(gesture.mode==='pending'){if(Math.hypot(e.clientX-gesture.sx,e.clientY-gesture.sy)>MOVE_PX){clearTimeout(gesture.timer);gesture.mode='pan';}else return;}
+  if(gesture.mode==='pan'){view.tx=gesture.tx+(e.clientX-gesture.sx);view.ty=gesture.ty+(e.clientY-gesture.sy);applyView();}
+  else if(gesture.mode==='paint'){showRing(e.clientX,e.clientY);if(!bucketOn)lastPaint=-1;paintAtXY(e.clientX,e.clientY);}
+ });
+ const endPointer=e=>{if(!pointers.has(e.pointerId))return;
+  if(gesture&&gesture.id===e.pointerId){clearTimeout(gesture.timer);if(gesture.mode==='pending'){paintAtXY(e.clientX,e.clientY);}gesture=null;hideRing();setPaintUI(false);}
+  pointers.delete(e.pointerId);
+  if(pointers.size<2&&pinch){pinch=null;if(pointers.size===1)clearGesture();}
+  if(pointers.size===0){clearGesture();if(saveQueued)persistNow();}
+ };
  stage.addEventListener('pointerup',endPointer);stage.addEventListener('pointercancel',endPointer);
  stage.addEventListener('wheel',e=>{e.preventDefault();if(!P)return;const rect=stage.getBoundingClientRect();zoomAt(e.clientX-rect.left,e.clientY-rect.top,e.deltaY<0?1.18:1/1.18);},{passive:false});
  stage.addEventListener('contextmenu',e=>e.preventDefault());
- stage.addEventListener('dblclick',()=>{if(P)resetView();});
  document.addEventListener('gesturestart',e=>e.preventDefault());}
 
 /* §14 flow */
@@ -656,12 +720,11 @@ function fmtTime(ms){const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.flo
 function startTimer(){if(timerId){clearInterval(timerId);timerId=null;}if(!P||P.isCompleted)return;if(!P.runTs)P.runTs=Date.now();const t=()=>{$('timer').textContent=fmtTime(curElapsedMs());};t();timerId=setInterval(t,500);}
 function stopTimer(){if(timerId){clearInterval(timerId);timerId=null;}if(P&&P.runTs){P.elapsedMs+=Date.now()-P.runTs;P.runTs=0;}}
 function updateProgress(){const pct=P.total?Math.round(P.filledCount/P.total*100):0;const c=$('progress-circle'),C=2*Math.PI*c.r.baseVal.value;c.style.strokeDasharray=`${C} ${C}`;c.style.strokeDashoffset=C-(pct/100)*C;$('progress-text').textContent=pct+'%';}
-function enterGame(msg){revokeAll();showScreen('screen-game');painting=false;panning=false;pinch=null;panStart=null;pointers.clear();setPaintUI(false);const d=depthInfo(P.depth);$('hud-sub').textContent=(currentWork.mode==='online'?`Lv.${currentWork.level}`:'照片')+`・${d.en}`;$('timer').textContent=fmtTime(curElapsedMs());updateProgress();updateStripInfo();setToolColor();const init=(tries=0)=>{const el=$('canvas-container');if(el.clientWidth>0&&el.clientHeight>0||tries>=120){resizeMainCanvas();resetView();stripOffset=0;stripAnim=null;renderStrip();startTimer();selectFirstAvailable();}else requestAnimationFrame(()=>init(tries+1));};requestAnimationFrame(()=>init());if(msg)showToast(msg);}
+function enterGame(msg){revokeAll();showScreen('screen-game');clearGesture();pinch=null;pointers.clear();const d=depthInfo(P.depth);$('hud-sub').textContent=(currentWork.mode==='online'?`Lv.${currentWork.level}`:'照片')+`・${d.en}`;$('timer').textContent=fmtTime(curElapsedMs());updateProgress();updateStripInfo();setToolColor();const init=(tries=0)=>{const el=$('canvas-container');if(el.clientWidth>0&&el.clientHeight>0||tries>=120){resizeMainCanvas();resetView();stripOffset=0;stripAnim=null;renderStrip();startTimer();selectFirstAvailable();}else requestAnimationFrame(()=>init(tries+1));};requestAnimationFrame(()=>init());showToast(msg||'👆 短點單填・🖐️ 拖曳移動・⏱️ 長按拖軌填色');}
 function confirmReset(){if(!P)return;const btn=$('reset-btn');if(!resetArmed){resetArmed=true;btn.textContent='⚠️ 再點確認';btn.classList.add('danger-armed');resetArmT=setTimeout(()=>{disarmReset();showToast('已取消重置');},3000);}else{clearTimeout(resetArmT);disarmReset();resetGrid();}}
 function disarmReset(){resetArmed=false;const b=$('reset-btn');b.textContent='↺ 重置';b.classList.remove('danger-armed');}
-function resetGrid(){if(!P)return;const wasCompleted=!!P.isCompleted;stopTimer();P.filled.fill(0);P.filledCount=0;P.isCompleted=false;P.elapsedMs=0;P.runTs=0;P.pal.remaining.set(P.pal.total);fillGray();P.workCtx.putImageData(P.workImg,0,0);dirtyBox=null;fwBuild();stripPool.forEach(el=>el.remove());stripPool.clear();stripOffset=0;stripAnim=null;flashes.length=0;lastFlash.clear();if(wasCompleted&&currentWork)currentWork=Object.assign({},currentWork,{id:Date.now(),date:new Date().toLocaleDateString('zh-TW')});saveWarned=false;renderStrip();updateStripInfo();updateProgress();selectFirstAvailable();dirty=true;startTimer();persistNow();showToast('↺ 已重置畫布');}
-function win(){stopTimer();P.isCompleted=true;persistNow();if(currentWork.mode==='online'){onlineDone.add(currentWork.level);onlineBest=Math.max(onlineBest,currentWork.level);saveSettings();}setTimeout(()=>{const d=depthInfo(P.depth);$('complete-preview').src=urlFor(currentWorkEntryForPreview(),'preview')||makePreviewURLSync(900,.85);$('complete-stats').innerHTML=`<span class="stat-chip">🧱 <b>${fmt(P.total)}</b> 格</span><span class="stat-chip">🎨 <b>${fmt(P.pal.count)}</b> 色</span><span class="stat-chip">⏱ <b>${fmtTime(curElapsedMs())}</b></span><span class="stat-chip" style="border-color:${d.c};color:${d.c}">${d.icon} ${d.name}</span>`+(currentWork.mode==='online'?`<span class="stat-chip">🌐 Lv.<b>${currentWork.level}</b></span>`:'');const note=$('complete-save-note');note.textContent=lastSaveOk?'💾 已自動儲存到「我的作品」':'⚠️ 進度保存失敗（儲存空間不足）';note.classList.toggle('bad',!lastSaveOk);const nb=$('btn-next-level');if(currentWork.mode==='online'){nb.style.display='';nb.textContent=`▶ 下一關 Lv.${currentWork.level+1}`;}else nb.style.display='none';showOverlay('overlay-complete');startConfetti();sndWin();updateStorageUI();},450);}
-function currentWorkEntryForPreview(){return worksCache.find(w=>w.id===currentWork.id)||null;}
+function resetGrid(){if(!P)return;const wasCompleted=!!P.isCompleted;stopTimer();P.filled.fill(0);P.filledCount=0;P.isCompleted=false;P.elapsedMs=0;P.runTs=0;P.pal.remaining.set(P.pal.total);fillGray();P.workCtx.putImageData(P.workImg,0,0);dirtyBox=null;fwBuild();stripPool.forEach(el=>el.remove());stripPool.clear();stripOffset=0;stripAnim=null;flashes.length=0;if(wasCompleted&&currentWork)currentWork=Object.assign({},currentWork,{id:Date.now(),date:new Date().toLocaleDateString('zh-TW')});saveWarned=false;renderStrip();updateStripInfo();updateProgress();selectFirstAvailable();dirty=true;startTimer();persistNow();showToast('↺ 已重置畫布');}
+function win(){stopTimer();P.isCompleted=true;persistNow();if(currentWork.mode==='online'){onlineDone.add(currentWork.level);onlineBest=Math.max(onlineBest,currentWork.level);saveSettings();}setTimeout(()=>{const d=depthInfo(P.depth);const e=worksCache.find(w=>w.id===currentWork.id);$('complete-preview').src=(e&&urlFor(e,'preview'))||makePreviewURLSync(900,.85);$('complete-stats').innerHTML=`<span class="stat-chip">🧱 <b>${fmt(P.total)}</b> 格</span><span class="stat-chip">🎨 <b>${fmt(P.pal.count)}</b> 色</span><span class="stat-chip">⏱ <b>${fmtTime(curElapsedMs())}</b></span><span class="stat-chip" style="border-color:${d.c};color:${d.c}">${d.icon} ${d.name}</span>`+(currentWork.mode==='online'?`<span class="stat-chip">🌐 Lv.<b>${currentWork.level}</b></span>`:'');const note=$('complete-save-note');note.textContent=lastSaveOk?'💾 已自動儲存到「我的作品」':'⚠️ 進度保存失敗（儲存空間不足）';note.classList.toggle('bad',!lastSaveOk);const nb=$('btn-next-level');if(currentWork.mode==='online'){nb.style.display='';nb.textContent=`▶ 下一關 Lv.${currentWork.level+1}`;}else nb.style.display='none';showOverlay('overlay-complete');startConfetti();sndWin();updateStorageUI();},450);}
 function makePreviewURLSync(maxDim,q){const mx=Math.max(P.cols,P.rows);let f=Math.min(maxDim/mx,64);if(f>=1)f=Math.max(1,Math.floor(f));const out=document.createElement('canvas');out.width=Math.max(1,Math.round(P.cols*f));out.height=Math.max(1,Math.round(P.rows*f));const c=out.getContext('2d');c.imageSmoothingEnabled=f<1;c.drawImage(P.workCanvas,0,0,out.width,out.height);return out.toDataURL('image/jpeg',q);}
 function replay(){hideOverlay('overlay-complete');stopConfetti();resetGrid();}
 function goHome(){hideOverlay('overlay-complete');stopConfetti();stopTimer();persistNow();disarmReset();showScreen('screen-menu');}
@@ -672,11 +735,11 @@ async function downloadCurrent(){if(!P)return;try{syncWorkCanvas();const mx=Math
 function srcDims(){return{w:srcImg.naturalWidth,h:srcImg.naturalHeight};}
 function resCells(){const{w,h}=srcDims(),f=chosenPct/100;const cols=Math.max(2,Math.round(w*f)),rows=Math.max(2,Math.round(h*f));return{cols,rows,n:cols*rows};}
 function setPct(el){chosenPct=+el.dataset.pct;document.querySelectorAll('#pct-chips .chip').forEach(c=>c.classList.toggle('on',c===el));updateResStats();}
-function updateResStats(){if(!srcImg)return;const{w,h}=srcDims(),{cols,rows,n}=resCells(),d=depthInfo(depth);$('res-stats').textContent=`${fmt(cols)} × ${fmt(rows)} ＝ ${fmt(n)} 格`;$('res-colors').textContent=`色深 ${d.L}×${d.L}×${d.L}・上限 ${fmt(d.L**3)} 色（實際依照片）`;const note=$('res-note');let msg=`完整原圖 ${fmt(w)}×${fmt(h)}，未裁切縮小`,cls='ok';if(n>HARD_CELLS){msg=`⛔ ${fmt(n)} 格超過裝置上限 ${fmt(HARD_CELLS)}，請降低解析度`;cls='bad';}else if(n>SOFT_CELLS){msg+=`｜⚠️ 巨大網格：載入與保存較慢`;cls='';}if(depth>=64&&n<=HARD_CELLS)msg+=`｜👿 惡魔色深建議搭配較小解析度`;note.textContent=msg;note.className='res-note '+cls;$('btn-start-game').disabled=n>HARD_CELLS||storageRatio()>=BLOCK_PCT;}
+function updateResStats(){if(!srcImg)return;const{w,h}=srcDims(),{cols,rows,n}=resCells(),d=depthInfo(depth);$('res-stats').textContent=`${fmt(cols)} × ${fmt(rows)} ＝ ${fmt(n)} 格`;$('res-colors').textContent=`難度 ${d.icon} ${d.name}・${d.L}³・上限 ${fmt(d.L**3)} 色（⚙️ 設定可改）`;const note=$('res-note');let msg=`完整原圖 ${fmt(w)}×${fmt(h)}，未裁切縮小`,cls='ok';if(n>HARD_CELLS){msg=`⛔ ${fmt(n)} 格超過裝置上限 ${fmt(HARD_CELLS)}，請降低解析度`;cls='bad';}else if(n>SOFT_CELLS){msg+=`｜⚠️ 巨大網格：載入與保存較慢`;cls='';}if(depth>=64&&n<=HARD_CELLS)msg+=`｜👿 惡魔色深建議搭配較小解析度`;note.textContent=msg;note.className='res-note '+cls;$('btn-start-game').disabled=n>HARD_CELLS||storageRatio()>=BLOCK_PCT;}
 function enterResScreen(){$('res-preview').src=srcImg.src;const{w,h}=srcDims();let pick=PCTS[PCTS.length-1];for(const p of PCTS){const f=p/100;if(Math.max(2,Math.round(w*f))*Math.max(2,Math.round(h*f))<=AUTO_CELLS){pick=p;break;}}chosenPct=pick;document.querySelectorAll('#pct-chips .chip').forEach(c=>c.classList.toggle('on',+c.dataset.pct===pick));updateResStats();updateStorageUI();showScreen('screen-res');}
-async function startGame(){if(!srcImg){showToast('請先選擇一張照片！');return;}if(!checkStorageAvailable())return;const{cols,rows,n}=resCells();if(n>HARD_CELLS){showToast('⛔ 網格過大，請降低解析度');return;}if(P)persistNow();setLoad('正在把照片切成方格…',0);showOverlay('overlay-loading');try{await buildNewPuzzle(srcImg,cols,rows,depth,{mode:'photo'});hideOverlay('overlay-loading');enterGame('🎨 進度自動保存！');}catch(err){console.error(err);hideOverlay('overlay-loading');showToast('⚠️ 生成失敗：記憶體不足，請降低解析度或色深');}}
+async function startGame(){if(!srcImg){showToast('請先選擇一張照片！');return;}if(!checkStorageAvailable())return;const{cols,rows,n}=resCells();if(n>HARD_CELLS){showToast('⛔ 網格過大，請降低解析度');return;}if(P)persistNow();setLoad('正在把照片切成方格…',0);showOverlay('overlay-loading');try{await buildNewPuzzle(srcImg,cols,rows,depth,{mode:'photo'});hideOverlay('overlay-loading');enterGame();}catch(err){console.error(err);hideOverlay('overlay-loading');showToast('⚠️ 生成失敗：記憶體不足，請降低解析度或色深');}}
 
-/* §16 online sources + procedural offline art */
+/* §16 online */
 const UNSPLASH=['photo-1506744038136-46273834b3fb','photo-1469474968028-56623f02e42e','photo-1447752875215-b2761acb3c5d','photo-1433086966358-54859d0ed716','photo-1501785888041-af3ef285b470','photo-1470071459604-3b5ec3a7fe05','photo-1441974231531-c6227db76b6e','photo-1502082553048-f009c37129b9','photo-1472214103451-9374bd1c798e','photo-1509316975850-ff9c5deb0cd9','photo-1513836279014-a89f7a76ae86','photo-1518495973542-4542c06a5843','photo-1465146344425-f00d5f5c8f07','photo-1482938289607-e9573fc25ebb','photo-1507525428034-b723cf961d3e','photo-1519046904884-53103b34b206','photo-1500534314209-a25ddb2bd429','photo-1493246507139-91e8fad9978e','photo-1476514525535-07fb3b4ae5f1','photo-1506905925346-21bda4d32df4','photo-1464822759023-fed622ff2c3b','photo-1454496522488-7a8e488e8606','photo-1519681393784-d120267933ba','photo-1497436072909-60f360e1d4b1'];
 let onlineCache={level:0,img:null,url:null,source:''},fetchSeq=0,attemptCtl=null,netCooldownUntil=0,onlineDebounce=0,fallbackToastShown=0;
 function levelDims(l){const A=[[4,3],[1,1],[3,4],[16,10],[3,2],[4,5]][(l-1)%6];const md=Math.min(24+(l-1)*6,240);let cols,rows;if(A[0]>=A[1]){cols=md;rows=Math.max(12,Math.round(md*A[1]/A[0]));}else{rows=md;cols=Math.max(12,Math.round(md*A[0]/A[1]));}return{cols,rows};}
@@ -698,13 +761,13 @@ async function fetchLevel(l,onStatus){if(onlineCache.level===l&&onlineCache.img)
  for(const src of order){if(fetchSeq!==mySeq)throw abortErr();onStatus&&onStatus(`連線 ${src==='unsplash'?'Unsplash':'Picsum'}…`);const ctl=new AbortController();attemptCtl=ctl;const to=setTimeout(()=>ctl.abort(),timeout);try{const url=src==='unsplash'?unsplashURL(l,W,H):picsumURL(l,W,H);const res=await fetch(url,{signal:ctl.signal,mode:'cors'});if(!res.ok)throw new Error('HTTP');const blob=await res.blob();if(!/^image\//.test(blob.type))throw new Error('type');const ourl=URL.createObjectURL(blob);const img=await loadImg(ourl);clearTimeout(to);if(fetchSeq!==mySeq){URL.revokeObjectURL(ourl);throw abortErr();}setCache(l,img,ourl,src);settings.lastGood=src;saveSettings();return img;}catch(e){clearTimeout(to);if(fetchSeq!==mySeq)throw abortErr();}}
  if(fetchSeq!==mySeq)throw abortErr();if(order.length)netCooldownUntil=Date.now()+60000;onStatus&&onStatus('產生離線關卡…');const art=makeOfflineArt(l,W,H);const url=art.toDataURL('image/png');const img=await loadImg(url);if(fetchSeq!==mySeq)throw abortErr();setCache(l,img,url,'offline');return img;}
 function srcName(s){return s==='unsplash'?'Unsplash':s==='picsum'?'Picsum':s==='offline'?'⚡ 離線生成':'—';}
-function updateOnlineUI(){const{cols,rows}=levelDims(onlineLevel),d=depthInfo(depth);$('online-level-num').textContent=`Lv.${onlineLevel}`;$('online-ph-text').textContent=`Lv.${onlineLevel}`;$('online-done-badge').textContent=onlineDone.has(onlineLevel)?'✅ 已通關':'';$('online-best').textContent=onlineBest?`🏅 最高完成 Lv.${onlineBest}`:'♾️ 從 Lv.1 開始挑戰';$('online-prev').disabled=onlineLevel<=1;$('online-stats').textContent=`${cols} × ${rows} ＝ ${fmt(cols*rows)} 格`;$('online-colors').textContent=`色深 ${d.L}³・上限 ${fmt(Math.min(d.L**3,cols*rows))} 色`;$('online-preview-box').style.aspectRatio=`${cols}/${rows}`;const ready=onlineCache.level===onlineLevel&&onlineCache.img;$('btn-start-online').disabled=!ready;$('btn-start-online').textContent=ready?`🎨 開始 Lv.${onlineLevel}`:'⏳ 載入關卡…';const badge=$('src-badge');if(ready){badge.textContent=srcName(onlineCache.source);badge.classList.toggle('off',onlineCache.source==='offline');}else{badge.textContent='—';badge.classList.remove('off');}}
+function updateOnlineUI(){const{cols,rows}=levelDims(onlineLevel),d=depthInfo(depth);$('online-level-num').textContent=`Lv.${onlineLevel}`;$('online-ph-text').textContent=`Lv.${onlineLevel}`;$('online-done-badge').textContent=onlineDone.has(onlineLevel)?'✅ 已通關':'';$('online-best').textContent=onlineBest?`🏅 最高完成 Lv.${onlineBest}`:'♾️ 從 Lv.1 開始挑戰';$('online-prev').disabled=onlineLevel<=1;$('online-stats').textContent=`${cols} × ${rows} ＝ ${fmt(cols*rows)} 格`;$('online-colors').textContent=`難度 ${d.icon} ${d.name}・上限 ${fmt(Math.min(d.L**3,cols*rows))} 色（⚙️ 設定可改）`;$('online-preview-box').style.aspectRatio=`${cols}/${rows}`;const ready=onlineCache.level===onlineLevel&&onlineCache.img;$('btn-start-online').disabled=!ready;$('btn-start-online').textContent=ready?`🎨 開始 Lv.${onlineLevel}`:'⏳ 載入關卡…';const badge=$('src-badge');if(ready){badge.textContent=srcName(onlineCache.source);badge.classList.toggle('off',onlineCache.source==='offline');}else{badge.textContent='—';badge.classList.remove('off');}}
 function setOnlineLoading(){$('online-shimmer').classList.add('show');$('online-error').classList.remove('show');$('online-preview').classList.remove('ready');$('online-ph').classList.remove('hide');$('btn-start-online').disabled=true;$('btn-start-online').textContent='⏳ 載入關卡…';}
 function setOnlineReady(){if(onlineCache.level!==onlineLevel)return;const img=$('online-preview');img.src=onlineCache.url;img.classList.add('ready');$('online-ph').classList.add('hide');$('online-shimmer').classList.remove('show');$('online-error').classList.remove('show');$('btn-start-online').disabled=false;$('btn-start-online').textContent=`🎨 開始 Lv.${onlineLevel}`;updateOnlineUI();if(onlineCache.source==='offline'&&(settings.srcMode||'auto')!=='offline'&&fallbackToastShown!==onlineLevel){fallbackToastShown=onlineLevel;showToast('📡 無法連線，已改用離線生成關卡');}}
 function setOnlineError(){$('online-shimmer').classList.remove('show');$('online-error').classList.add('show');$('btn-start-online').disabled=true;}
 async function refreshOnlinePreview(force){const l=onlineLevel;updateOnlineUI();if(onlineCache.level===l&&onlineCache.img&&!force){setOnlineReady();return;}setOnlineLoading();try{await fetchLevel(l,t=>setLoad(t,.3));if(onlineLevel===l)setOnlineReady();}catch(e){if(e&&e.name==='AbortError')return;if(onlineLevel===l)setOnlineError();}}
 function setOnlineLevel(l){onlineLevel=Math.max(1,Math.min(999999,l|0||1));saveSettings();$('online-jump').value='';updateOnlineUI();clearTimeout(onlineDebounce);onlineDebounce=setTimeout(()=>refreshOnlinePreview(),260);}
-async function playOnline(l){l=Math.max(1,l|0);if(!checkStorageAvailable())return;if(P)persistNow();onlineLevel=l;saveSettings();setLoad(`下載 Lv.${l} 關卡圖片…`,.02);showOverlay('overlay-loading');try{const img=await fetchLevel(l,t=>setLoad(t,.1));const{cols,rows}=levelDims(l);await buildNewPuzzle(img,cols,rows,depth,{mode:'online',level:l});hideOverlay('overlay-loading');enterGame(`🌐 Lv.${l} 開始！進度自動保存`);}catch(err){console.error(err);hideOverlay('overlay-loading');showToast('⚠️ 關卡載入失敗');showScreen('screen-online');setOnlineError();}}
+async function playOnline(l){l=Math.max(1,l|0);if(!checkStorageAvailable())return;if(P)persistNow();onlineLevel=l;saveSettings();setLoad(`下載 Lv.${l} 關卡圖片…`,.02);showOverlay('overlay-loading');try{const img=await fetchLevel(l,t=>setLoad(t,.1));const{cols,rows}=levelDims(l);await buildNewPuzzle(img,cols,rows,depth,{mode:'online',level:l});hideOverlay('overlay-loading');enterGame(`🌐 Lv.${l} 開始！`);}catch(err){console.error(err);hideOverlay('overlay-loading');showToast('⚠️ 關卡載入失敗');showScreen('screen-online');setOnlineError();}}
 
 /* §17 resume */
 async function rebuildFromSave(data){const img=await loadImg(urlFor(data,'puzzle'));const cols=data.cols,rows=data.rows,n=cols*rows,L=data.depth||16;const px=gridCanvas(img,cols,rows);let a;if(Array.isArray(data.pal)&&data.pal.length){a=await analyzeLegacy(px,n,L,data.pal,p=>setLoad('恢復色盤（舊版存檔）…',.05+p*.65));}else{a=await analyzePixels(px,n,L,p=>setLoad('恢復色盤…',.05+p*.6));setLoad('排序色盤…',.7);await tick();sortPalette(a);}const filled=data.filled?decodeRLE(data.filled,n):new Uint8Array(n);setLoad('重建畫布…',.75);await tick();await assemblePuzzle(cols,rows,L,a,filled,(data.elapsed||0)*1000,p=>setLoad('重建畫布…',.75+p*.2));currentWork={id:data.id,date:data.date||new Date().toLocaleDateString('zh-TW'),mode:data.mode||'photo',level:data.level||0,depth:L,cols,rows,puzzleBlob:data.puzzleBlob,pal:Array.isArray(data.pal)?data.pal:undefined};saveWarned=false;}
@@ -712,7 +775,7 @@ function resumeWork(id){const data=loadWorks().find(w=>w.id===id&&!w.completed);
 function refreshResumeBtn(){const list=loadWorks().filter(w=>!w.completed).sort((a,b)=>b.id-a.id),btn=$('resume-btn');if(list.length){const w=list[0],pct=w.total?Math.round((w.filledCount||0)/w.total*100):0;btn.style.display='';btn.textContent=`▶️ 繼續未完成作品（${pct}%${w.mode==='online'?`・Lv.${w.level}`:''}）`;}else btn.style.display='none';}
 function resumeLatest(){const list=loadWorks().filter(w=>!w.completed).sort((a,b)=>b.id-a.id);if(list.length)resumeWork(list[0].id);else showToast('目前沒有未完成的作品');}
 
-/* §18 gallery / viewer / delete+undo */
+/* §18 gallery / viewer */
 function showGallery(){updateStorageUI();revokeAll();const grid=$('gallery-grid');grid.innerHTML='';const list=loadWorks();if(!list.length){grid.innerHTML='<p class="empty-msg">尚無作品<br>開始挑戰後進度會自動保存在這裡 🎨</p>';return;}const inProg=list.filter(w=>!w.completed).sort((a,b)=>b.id-a.id);const done=list.filter(w=>w.completed).sort((a,b)=>b.id-a.id);inProg.concat(done).forEach(item=>grid.appendChild(makeGalleryCard(item)));}
 function makeGalleryCard(item){const div=document.createElement('div');div.className='gallery-item';const W=item.cols||'?',H=item.rows||'?',d=depthInfo(item.depth||16);const img=urlFor(item,'preview');const modeBadge=item.mode==='online'?`<span class="gi-badge lv">Lv.${item.level}</span>`:`<span class="gi-badge ph">📷</span>`;const meta=`<div class="gallery-meta"><b>${item.date||''}</b><span>${W}×${H}</span><small style="color:${d.c}">${d.icon} ${d.name}・${fmt(item.colors||0)} 色${item.time?'・⏱'+item.time:''}</small></div>`;if(item.completed){div.innerHTML=`<img src="${img}" alt="作品" loading="lazy"><div class="gi-badges"><span class="gi-badge done">✅ 完成</span>${modeBadge}</div><button class="gallery-delete" aria-label="刪除">✕</button>${meta}`;div.addEventListener('click',e=>{if(e.target.closest('.gallery-delete'))return;openViewer(item);});}else{const pct=item.total?Math.round((item.filledCount||0)/item.total*100):0;div.innerHTML=`<img src="${img}" alt="未完成作品" loading="lazy"><div class="gi-badges"><span class="gi-badge">🎨 ${pct}%</span>${modeBadge}</div><button class="gallery-delete" aria-label="刪除">✕</button><div class="gi-progress"><i style="width:${pct}%"></i></div>${meta}<button class="gi-resume" type="button">▶ 繼續完成</button>`;div.addEventListener('click',e=>{if(e.target.closest('.gallery-delete'))return;resumeWork(item.id);});}div.querySelector('.gallery-delete').addEventListener('click',e=>{e.stopPropagation();deleteWork(item.id);});return div;}
 async function deleteWork(id){const ok=await askConfirm({title:'🗑️ 刪除作品',desc:'確定要刪除這幅作品嗎？刪除後可在提示中復原。',ok:'刪除'});if(!ok)return;const entry=loadWorks().find(w=>w.id===id);await removeWork(id);if(currentWork&&currentWork.id===id)currentWork=null;if($('screen-gallery').classList.contains('active'))showGallery();refreshResumeBtn();updateStorageUI();if(entry)showToast('🗑️ 已刪除，已釋放空間',{label:'復原',fn:async()=>{try{await dbPut(entry);cacheUpsert(entry);showToast('✅ 已復原');if($('screen-gallery').classList.contains('active'))showGallery();refreshResumeBtn();updateStorageUI();refreshQuota();}catch(e){showToast('⚠️ 復原失敗：空間不足');}}});}
@@ -723,15 +786,23 @@ function setupViewer(){const st=$('viewer-stage'),vPts=new Map();let vPinch=null
 function downloadViewerItem(){if(!viewerItem)return;const u=urlFor(viewerItem,'puzzle')||urlFor(viewerItem,'preview');downloadURL(u,`SnapPaint_${viewerItem.id}.png`);showToast('⬇️ 已下載');}
 function deleteViewerItem(){if(!viewerItem)return;const id=viewerItem.id;hideOverlay('overlay-viewer');deleteWork(id);}
 
-/* §19 depth chips */
+/* §19 depth chips (settings only) */
 function compactColors(n){return n>=1e6?(n/1e6).toFixed(1)+'M':fmt(n);}
-function renderDepthChips(){document.querySelectorAll('.depth-chips').forEach(box=>{box.innerHTML='';DEPTHS.forEach(d=>{const b=document.createElement('button');b.type='button';b.className='dchip'+(d.L===depth?' on':'')+(d.L>=64?' demon':'');b.style.setProperty('--c',d.c);b.style.setProperty('--cA',hexA(d.c,.16));b.innerHTML=`<b>${d.icon} ${d.name}</b><small>${compactColors(d.L**3)} 色</small>`;b.title=`${d.en}・${d.L}³・${fmt(d.L**3)} 色`;b.addEventListener('click',()=>{depth=d.L;saveSettings();renderDepthChips();if(srcImg)updateResStats();updateOnlineUI();});box.appendChild(b);});});}
+function renderDepthChips(){document.querySelectorAll('.depth-chips').forEach(box=>{box.innerHTML='';DEPTHS.forEach(d=>{const b=document.createElement('button');b.type='button';b.className='dchip'+(d.L===depth?' on':'')+(d.L>=64?' demon':'');b.style.setProperty('--c',d.c);b.style.setProperty('--cA',hexA(d.c,.16));b.innerHTML=`<b>${d.icon} ${d.name}</b><small>${compactColors(d.L**3)} 色</small>`;b.title=`${d.en}・${d.L}³・${fmt(d.L**3)} 色`;b.addEventListener('click',()=>{depth=d.L;saveSettings();renderDepthChips();if(srcImg)updateResStats();updateOnlineUI();sndUI();});box.appendChild(b);});});}
+function openSettings(){$('set-sound').checked=!muted;$('set-wrong').checked=!!settings.allowWrong;renderDepthChips();showOverlay('overlay-settings');}
+function closeSettings(){hideOverlay('overlay-settings');}
 
 /* §20 bindings & boot */
 function bindAll(){
  on('btn-new-game','click',()=>{if(checkStorageAvailable())$('file-input').click();});
  on('btn-online','click',()=>showScreen('screen-online'));
  on('btn-gallery','click',()=>showScreen('screen-gallery'));
+ on('btn-settings','click',openSettings);
+ on('res-settings','click',openSettings);
+ on('online-settings','click',openSettings);
+ on('btn-settings-close','click',closeSettings);
+ on('set-sound','change',e=>setMuted(!e.target.checked));
+ on('set-wrong','change',e=>{settings.allowWrong=e.target.checked;saveSettings();showToast(settings.allowWrong?'🎨 已允許填錯顏色':'🔒 填錯顏色已關閉（點錯無反應）');});
  on('resume-btn','click',resumeLatest);
  on('file-input','change',e=>{const file=e.target.files[0];e.target.value='';if(!file)return;if(!checkStorageAvailable())return;const rd=new FileReader();rd.onload=ev=>{const img=new Image();img.onload=()=>{srcImg=img;enterResScreen();};img.onerror=()=>showToast('⚠️ 圖片載入失敗');img.src=ev.target.result;};rd.readAsDataURL(file);});
  document.querySelectorAll('#pct-chips .chip').forEach(c=>c.addEventListener('click',()=>setPct(c)));
@@ -753,6 +824,7 @@ function bindAll(){
  on('reset-btn','click',confirmReset);
  on('btn-select-num','click',selectNumFromInput);
  on('btn-locate','click',locate);
+ on('btn-fit','click',()=>{if(P){resetView();sndUI();}});
  on('num-input','input',e=>{e.target.value=e.target.value.replace(/\D/g,'');e.target.style.fontSize=e.target.value.length>4?'.85rem':'1.15rem';e.target.style.letterSpacing=e.target.value.length>4?'1px':'2px';});
  on('num-input','keydown',e=>{if(e.key==='Enter'){selectNumFromInput();e.target.blur();}});
  on('btn-gallery-back','click',()=>showScreen('screen-menu'));
@@ -768,7 +840,7 @@ function bindAll(){
  on('btn-confirm-ok','click',()=>closeConfirm(true));
  on('btn-confirm-cancel','click',()=>closeConfirm(false));
  $('overlay-confirm').addEventListener('click',e=>{if(e.target===$('overlay-confirm'))closeConfirm(false);});
- document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('overlay-confirm').classList.contains('active'))closeConfirm(false);else if($('overlay-viewer').classList.contains('active'))hideOverlay('overlay-viewer');}});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('overlay-confirm').classList.contains('active'))closeConfirm(false);else if($('overlay-settings').classList.contains('active'))closeSettings();else if($('overlay-viewer').classList.contains('active'))hideOverlay('overlay-viewer');}});
  document.querySelectorAll('.snd-btn').forEach(b=>b.addEventListener('click',()=>setMuted(!muted)));
  document.addEventListener('click',e=>{if(e.target.closest('button')&&!e.target.closest('.snd-btn')&&!e.target.closest('.pal-item'))sndUI();});
  const onViewport=()=>{if(P){resizeMainCanvas();applyView();scheduleStrip();}};
