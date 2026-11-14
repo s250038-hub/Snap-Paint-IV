@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>一拍即玩 SnapPaint｜長按拖軌・短點單填・設定</title>
+<title>一拍即玩 SnapPaint｜提示搜尋・長按拖軌・短點單填</title>
 <style>
 :root{
   --bg:#0E131B;--panel:#161D27;--panel2:#1C2532;--line:rgba(255,255,255,.08);
   --text:#E9EEF5;--muted:#8B98AA;--accent:#5EA0F2;--accent-deep:#3E7FD6;
-  --good:#35D07F;--warn:#FFC53D;--bad:#FF6B5E;
+  --good:#35D07F;--warn:#FFC53D;--bad:#FF6B5E;--search:#B07CF7;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Courier New",monospace;
   --disp:"Avenir Next","Futura","Trebuchet MS",-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
   --tool-color:#5EA0F2;--sb-track:rgba(255,255,255,.05);--sb-thumb:#31405A;--sb-hover:#46587A;
@@ -16,7 +16,7 @@
 *{box-sizing:border-box;margin:0;padding:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei","Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;width:100vw;height:100vh;height:100dvh;display:flex;flex-direction:column}
-body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(620px 440px at 12% -5%,rgba(94,160,242,.15),transparent 60%),radial-gradient(540px 420px at 105% 108%,rgba(53,208,127,.10),transparent 60%),radial-gradient(420px 320px at 88% 4%,rgba(255,95,162,.07),transparent 60%),linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:auto,auto,auto,26px 26px,26px 26px}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(620px 440px at 12% -5%,rgba(94,160,242,.15),transparent 60%),radial-gradient(540px 420px at 105% 108%,rgba(53,208,127,.10),transparent 60%),radial-gradient(420px 320px at 88% 4%,rgba(176,124,247,.10),transparent 60%),linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:auto,auto,auto,26px 26px,26px 26px}
 *{scrollbar-width:thin;scrollbar-color:var(--sb-thumb) var(--sb-track)}
 *::-webkit-scrollbar{width:8px;height:6px}
 *::-webkit-scrollbar-track{background:var(--sb-track);border-radius:4px}
@@ -83,19 +83,36 @@ h2.screen-title{font-family:var(--disp);font-size:1.5rem;margin-bottom:16px}
 @keyframes demonPulse{0%,100%{box-shadow:0 0 10px var(--cA),inset 0 0 0 1px var(--c)}50%{box-shadow:0 0 22px var(--cA),inset 0 0 0 1px var(--c)}}
 .res-hint{color:var(--muted);font-size:.78rem;line-height:1.7;max-width:380px;margin-top:14px}
 .online-body{flex:1;min-height:0;overflow-y:auto;display:flex}
+.mode-toggle{display:flex;gap:8px;margin-bottom:14px}
+.mode-toggle .chip.on{background:var(--search);border-color:var(--search);box-shadow:0 4px 12px rgba(176,124,247,.4)}
 .level-nav{display:flex;align-items:center;gap:14px;margin-bottom:14px;width:100%;justify-content:center}
 .level-nav .icon-btn{font-size:1.3rem;padding:8px 16px}
 .level-title{display:flex;flex-direction:column;align-items:center;min-width:150px}
 #online-level-num{font-family:var(--disp);font-size:2.1rem;font-weight:800;letter-spacing:1px;line-height:1.1}
 #online-done-badge{font-size:.74rem;color:var(--good);font-weight:800;min-height:1.1em}
 #online-best{font-size:.74rem;color:var(--muted)}
+.search-row{display:flex;gap:8px;width:100%;max-width:440px;margin-bottom:10px}
+.search-row input{flex:1;min-width:0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#0F1520;color:var(--text);font-size:1rem;outline:none}
+.search-row input:focus{border-color:var(--search);box-shadow:0 0 0 3px rgba(176,124,247,.15)}
+.search-row .icon-btn{padding:12px 16px;font-size:1.1rem;background:var(--search);border-color:var(--search);color:#fff}
+.search-meta{display:flex;align-items:center;gap:8px;width:100%;max-width:440px;margin-bottom:10px;font-size:.78rem;color:var(--muted)}
+.search-meta select{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:.78rem;font-weight:700;outline:none}
+#search-count{margin-left:auto;font-family:var(--mono)}
+.search-results{display:flex;gap:8px;overflow-x:auto;width:100%;max-width:440px;padding:4px 2px 10px;margin-bottom:12px;min-height:76px}
+.sr-item{position:relative;flex:0 0 72px;width:72px;height:72px;border-radius:10px;overflow:hidden;border:2px solid var(--line);background:var(--panel2);cursor:pointer;padding:0;transition:border-color .15s,transform .1s}
+.sr-item:hover{border-color:var(--search)}
+.sr-item:active{transform:scale(.95)}
+.sr-item.on{border-color:var(--search);box-shadow:0 0 0 3px rgba(176,124,247,.25)}
+.sr-item img{width:100%;height:100%;object-fit:cover;display:block}
+.sr-item span{position:absolute;left:4px;bottom:4px;background:rgba(7,10,15,.8);color:#fff;font-size:.62rem;font-weight:800;padding:2px 6px;border-radius:999px;font-family:var(--mono)}
+.sr-empty,.sr-loading{display:flex;align-items:center;justify-content:center;width:100%;color:var(--muted);font-size:.82rem;border:1px dashed var(--line);border-radius:10px;min-height:72px}
 .preview-box{width:100%;max-height:34vh;border-radius:16px;overflow:hidden;position:relative;border:1px solid var(--line);background:var(--panel);box-shadow:0 10px 26px rgba(0,0,0,.45);margin-bottom:12px}
 .preview-box img{width:100%;height:100%;object-fit:cover;display:none}
 .preview-box img.ready{display:block}
 .preview-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--muted);font-size:.85rem;pointer-events:none}
 .preview-ph.hide{display:none}
 .preview-ph .big{font-size:2rem}
-.shimmer{position:absolute;inset:0;display:none;background:linear-gradient(110deg,rgba(28,37,50,.2) 30%,rgba(94,160,242,.18) 50%,rgba(28,37,50,.2) 70%);background-size:220% 100%;animation:shim 1.2s linear infinite}
+.shimmer{position:absolute;inset:0;display:none;background:linear-gradient(110deg,rgba(28,37,50,.2) 30%,rgba(176,124,247,.18) 50%,rgba(28,37,50,.2) 70%);background-size:220% 100%;animation:shim 1.2s linear infinite}
 .shimmer.show{display:block}
 @keyframes shim{from{background-position:200% 0}to{background-position:-20% 0}}
 .net-error{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(14,19,27,.92);color:var(--muted);font-size:.88rem;line-height:1.6;padding:14px}
@@ -180,6 +197,7 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
 .gi-badge.done{background:rgba(53,208,127,.95)}
 .gi-badge.lv{background:rgba(124,77,219,.95)}
 .gi-badge.ph{background:rgba(28,37,50,.95)}
+.gi-badge.sq{background:rgba(176,124,247,.95);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .gallery-delete{position:absolute;top:8px;right:8px;width:28px;height:28px;background:rgba(255,107,94,.9);color:#fff;border:none;border-radius:50%;font-size:.95rem;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.4);transition:transform .1s,background .15s;z-index:2}
 .gallery-delete:hover{background:var(--bad)}
 .gallery-delete:active{transform:scale(1.15)}
@@ -251,18 +269,18 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
   <div class="col">
     <div class="logo-strip"><i></i><i></i><i></i><i></i><i></i></div>
     <h1>一拍即玩<small>SNAPPAINT</small></h1>
-    <p class="tag">📸 照片切成編號方格，選色填滿重現原作。<br>👆 短點單填・🖐️ 拖曳移動・⏱️ 長按拖軌填色。<br>🌐 無限線上關卡・💾 IndexedDB 大容量。</p>
+    <p class="tag">📸 照片切成編號方格，選色填滿重現原作。<br>🔍 用提示搜尋圖片・👆 短點單填・⏱️ 長按拖軌。<br>🌐 無限關卡・💾 IndexedDB 大容量。</p>
     <div class="storage-bar">
       <div class="storage-label"><span>📦 作品儲存</span><b id="menu-storage-text">計算中…</b></div>
       <div class="storage-track"><div class="storage-fill" id="menu-storage-fill" style="width:0%"></div></div>
       <div class="storage-hint" id="menu-storage-hint"></div>
     </div>
-    <button class="btn btn-web" id="btn-online">🌐 線上關卡（無限）</button>
+    <button class="btn btn-web" id="btn-online">🌐 線上關卡 / 🔍 提示搜尋</button>
     <button class="btn" id="btn-new-game">📷 即影即玩 / 🖼️ 從相簿選擇</button>
     <button class="btn btn-good" id="resume-btn" style="display:none"></button>
     <button class="btn btn-ghost" id="btn-gallery">🏆 我的作品</button>
     <button class="btn btn-ghost" id="btn-settings">⚙️ 設定</button>
-    <p class="menu-foot">v3.2・填錯保留正確數字・不計進度・油漆桶只對正確編號</p>
+    <p class="menu-foot">v3.3・提示搜尋圖片・填錯保留數字不計進度・油漆桶只對正確編號</p>
   </div>
   <input type="file" id="file-input" accept="image/*" style="display:none">
 </div>
@@ -292,35 +310,67 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
 <div id="screen-online" class="screen">
   <div class="hud">
     <button class="icon-btn" id="btn-online-back">‹ 返回</button>
-    <span class="title-mini">🌐 線上關卡 ∞</span>
+    <span class="title-mini" id="online-title">🌐 線上關卡 ∞</span>
     <button class="icon-btn" id="online-settings" aria-label="設定">⚙️</button>
     <button class="icon-btn snd-btn" aria-label="音效開關">🔊</button>
   </div>
   <div class="online-body scrollable">
     <div class="col">
-      <div class="level-nav">
-        <button class="icon-btn" id="online-prev" aria-label="上一關">‹</button>
-        <div class="level-title">
-          <span id="online-level-num">Lv.1</span>
-          <span id="online-done-badge"></span>
-          <span id="online-best"></span>
-        </div>
-        <button class="icon-btn" id="online-next" aria-label="下一關">›</button>
+      <div class="mode-toggle">
+        <button class="chip on" id="mode-level">♾️ 關卡</button>
+        <button class="chip" id="mode-search">🔍 提示搜尋</button>
       </div>
+
+      <div id="level-mode">
+        <div class="level-nav">
+          <button class="icon-btn" id="online-prev" aria-label="上一關">‹</button>
+          <div class="level-title">
+            <span id="online-level-num">Lv.1</span>
+            <span id="online-done-badge"></span>
+            <span id="online-best"></span>
+          </div>
+          <button class="icon-btn" id="online-next" aria-label="下一關">›</button>
+        </div>
+        <div class="jump-row">
+          <input id="online-jump" type="text" inputmode="numeric" maxlength="6" placeholder="跳到關卡編號…" autocomplete="off">
+          <button class="icon-btn" id="online-go">前往</button>
+          <button class="icon-btn" id="online-random" title="隨機關卡">🎲</button>
+        </div>
+      </div>
+
+      <div id="search-mode" style="display:none">
+        <div class="search-row">
+          <input id="search-input" type="text" maxlength="60" placeholder="輸入提示：貓、sunset、城市、花…" autocomplete="off">
+          <button class="icon-btn" id="search-go" aria-label="搜尋">🔍</button>
+        </div>
+        <div class="search-meta">
+          <span>網格長邊</span>
+          <select id="search-size">
+            <option value="64">小 64</option>
+            <option value="120" selected>中 120</option>
+            <option value="200">大 200</option>
+          </select>
+          <span id="search-count"></span>
+        </div>
+        <div class="search-results" id="search-results">
+          <div class="sr-empty">輸入提示後按 🔍 搜尋圖片</div>
+        </div>
+      </div>
+
       <div class="preview-box" id="online-preview-box">
         <img id="online-preview" alt="">
         <div class="preview-ph" id="online-ph"><span class="big">🖼️</span><span id="online-ph-text">Lv.1</span></div>
         <div class="shimmer" id="online-shimmer"></div>
         <div class="net-error" id="online-error">
-          <span>⚠️ 關卡圖片載入失敗</span>
+          <span>⚠️ 圖片載入失敗</span>
           <button class="btn" id="online-retry">🔄 重試</button>
-          <button class="btn btn-ghost" id="online-offline">🎨 離線關卡</button>
+          <button class="btn btn-ghost" id="online-offline">🎨 離線主題圖</button>
         </div>
       </div>
       <div class="res-stats" id="online-stats">— × —</div>
       <div class="res-colors" id="online-colors"></div>
       <div class="source-row">
-        <span class="src-label">📡 來源</span>
+        <span class="src-label" id="src-label">📡 來源</span>
         <select id="src-select" class="src-select">
           <option value="auto">自動（建議）</option>
           <option value="unsplash">Unsplash</option>
@@ -329,13 +379,8 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
         </select>
         <span class="src-badge" id="src-badge">—</span>
       </div>
-      <div class="jump-row">
-        <input id="online-jump" type="text" inputmode="numeric" maxlength="6" placeholder="跳到關卡編號…" autocomplete="off">
-        <button class="icon-btn" id="online-go">前往</button>
-        <button class="icon-btn" id="online-random" title="隨機關卡">🎲</button>
-      </div>
       <button class="btn btn-web" id="btn-start-online" disabled>⏳ 載入關卡…</button>
-      <p class="res-hint">♾️ 關卡無限：尺寸隨關卡遞增。難度請到 ⚙️ 設定調整。<br>無法連線時自動改用離線生成關卡，永遠可玩。</p>
+      <p class="res-hint" id="online-hint"></p>
     </div>
   </div>
 </div>
@@ -512,19 +557,24 @@ const fmt=n=>Number(n||0).toLocaleString('en-US');
 const tick=()=>new Promise(r=>setTimeout(r,0));
 const loadImg=src=>new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('img'));i.src=src;});
 const hexA=(h,a)=>{const n=parseInt(h.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`;};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function formatBytes(b){b=Number(b)||0;if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';if(b<1073741824)return(b/1048576).toFixed(2)+' MB';if(b<1099511627776)return(b/1073741824).toFixed(2)+' GB';return(b/1099511627776).toFixed(2)+' TB';}
 function dataURLtoBlob(u){const i=u.indexOf(',');const meta=u.slice(0,i),b64=u.slice(i+1);const mime=(meta.match(/data:([^;]+)/)||[])[1]||'image/png';const bin=atob(b64);const a=new Uint8Array(bin.length);for(let k=0;k<bin.length;k++)a[k]=bin.charCodeAt(k);return new Blob([a],{type:mime});}
 function canvasBlob(c,type,q){return new Promise(res=>{try{c.toBlob(b=>res(b||dataURLtoBlob(c.toDataURL(type,q))),type,q);}catch(e){res(dataURLtoBlob(c.toDataURL(type,q)));}});}
+function hashStr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
 
 /* §2 settings */
-let settings={depth:16,muted:false,onlineLevel:1,done:[],srcMode:'auto',lastGood:'',best:0,allowWrong:false};
+let settings={depth:16,muted:false,onlineLevel:1,done:[],srcMode:'auto',lastGood:'',best:0,allowWrong:false,onlineMode:'level',searchQuery:'',searchSize:120};
 try{const s=JSON.parse(localStorage.getItem(LS_SET)||'null');if(s&&typeof s==='object')settings=Object.assign(settings,s);}catch(e){}
 let depth=DEPTHS.some(d=>d.L===settings.depth)?settings.depth:16;
 let muted=!!settings.muted;
 let onlineLevel=Math.max(1,settings.onlineLevel|0||1);
 let onlineDone=new Set(Array.isArray(settings.done)?settings.done:[]);
 let onlineBest=settings.best|0||0;
-function saveSettings(){settings.depth=depth;settings.muted=muted;settings.onlineLevel=onlineLevel;settings.done=Array.from(onlineDone);settings.best=onlineBest;try{localStorage.setItem(LS_SET,JSON.stringify(settings));}catch(e){}}
+let onlineMode=settings.onlineMode==='search'?'search':'level';
+let searchQuery=String(settings.searchQuery||'');
+let searchSize=[64,120,200].includes(+settings.searchSize)?+settings.searchSize:120;
+function saveSettings(){settings.depth=depth;settings.muted=muted;settings.onlineLevel=onlineLevel;settings.done=Array.from(onlineDone);settings.best=onlineBest;settings.onlineMode=onlineMode;settings.searchQuery=searchQuery;settings.searchSize=searchSize;try{localStorage.setItem(LS_SET,JSON.stringify(settings));}catch(e){}}
 
 /* §3 IndexedDB */
 let db=null,worksCache=[],quota=0,persistRequested=false;
@@ -550,7 +600,7 @@ async function convertLegacy(w){const e=Object.assign({},w);e.depth=w.depth||16;
 async function migrateLS(){for(const key of [LS_WORKS,LS_OLD]){let raw=null;try{raw=localStorage.getItem(key);}catch(e){}if(!raw)continue;try{const arr=JSON.parse(raw);if(Array.isArray(arr)){for(const w of arr){if(!w||!w.id||worksCache.some(x=>x.id===w.id))continue;try{const e=await convertLegacy(w);await dbPut(e);cacheUpsert(e);}catch(err){}}}}catch(e){}try{localStorage.removeItem(key);}catch(e){}}}
 
 /* §4 screens / toast / confirm / storage UI */
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>{if(s.id)s.classList.remove('active');});$(id).classList.add('active');if(id!=='screen-game')stopTimer();if(id==='screen-menu'){refreshResumeBtn();updateStorageUI();}if(id==='screen-gallery')showGallery();if(id==='screen-online'){updateOnlineUI();refreshOnlinePreview();}}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>{if(s.id)s.classList.remove('active');});$(id).classList.add('active');if(id!=='screen-game')stopTimer();if(id==='screen-menu'){refreshResumeBtn();updateStorageUI();}if(id==='screen-gallery')showGallery();if(id==='screen-online'){updateOnlineUI();if(onlineMode==='level')refreshOnlinePreview();}}
 function showOverlay(id){$(id).classList.add('active');}
 function hideOverlay(id){$(id).classList.remove('active');}
 function setLoad(t,p){$('loading-text').textContent=t;$('loading-fill').style.width=Math.round(clamp(p||0,0,1)*100)+'%';}
@@ -659,7 +709,7 @@ async function assemblePuzzle(cols,rows,L,a,filled,elapsedMs,onProg,wrongEntries
  fwBuild();
 }
 function gridCanvas(img,cols,rows){const off=document.createElement('canvas');off.width=cols;off.height=rows;const oc=off.getContext('2d',{willReadFrequently:true});oc.fillStyle='#fff';oc.fillRect(0,0,cols,rows);oc.imageSmoothingEnabled=true;oc.imageSmoothingQuality='high';oc.drawImage(img,0,0,cols,rows);return oc.getImageData(0,0,cols,rows).data;}
-async function buildNewPuzzle(img,cols,rows,L,meta){setLoad('正在把照片切成方格…',.02);await tick();const px=gridCanvas(img,cols,rows),n=cols*rows;const a=await analyzePixels(px,n,L,p=>setLoad(`分析色彩（${depthInfo(L).name}）…`,.05+p*.6));setLoad('排序色盤…',.7);await tick();sortPalette(a);setLoad('準備畫布…',.75);await tick();await assemblePuzzle(cols,rows,L,a,null,0,p=>setLoad('準備畫布…',.75+p*.15));setLoad('封裝存檔…',.92);await tick();const blob=await makeTargetBlob();currentWork={id:Date.now(),date:new Date().toLocaleDateString('zh-TW'),mode:meta.mode,level:meta.level||0,depth:L,cols,rows,puzzleBlob:blob};setLoad('完成！',1);}
+async function buildNewPuzzle(img,cols,rows,L,meta){setLoad('正在把照片切成方格…',.02);await tick();const px=gridCanvas(img,cols,rows),n=cols*rows;const a=await analyzePixels(px,n,L,p=>setLoad(`分析色彩（${depthInfo(L).name}）…`,.05+p*.6));setLoad('排序色盤…',.7);await tick();sortPalette(a);setLoad('準備畫布…',.75);await tick();await assemblePuzzle(cols,rows,L,a,null,0,p=>setLoad('準備畫布…',.75+p*.15));setLoad('封裝存檔…',.92);await tick();const blob=await makeTargetBlob();currentWork={id:Date.now(),date:new Date().toLocaleDateString('zh-TW'),mode:meta.mode,level:meta.level||0,query:meta.query||'',index:meta.index||0,depth:L,cols,rows,puzzleBlob:blob};setLoad('完成！',1);}
 function encodeRLE(arr){const parts=[];let i=0;const len=arr.length;while(i<len){const v=arr[i];let c=1;while(i+c<len&&arr[i+c]===v&&c<255)c++;parts.push(String.fromCharCode(v,c));i+=c;}return btoa(parts.join(''));}
 function decodeRLE(str,total){const bin=atob(str),arr=new Uint8Array(total);let i=0,out=0;while(i+1<bin.length){const v=bin.charCodeAt(i),c=bin.charCodeAt(i+1);i+=2;for(let k=0;k<c&&out<total;k++)arr[out++]=v;}return arr;}
 
@@ -677,7 +727,7 @@ async function persistWork(){
  try{
   syncWorkCanvas();
   const preview=await makePreviewBlob(P.isCompleted?1280:220,P.isCompleted?.82:.6);
-  const entry={id:currentWork.id,date:currentWork.date,mode:currentWork.mode,level:currentWork.level,depth:P.depth,cols:P.cols,rows:P.rows,colors:P.pal.count,elapsed:Math.floor(curElapsedMs()/1000),time:fmtTime(curElapsedMs()),completed:!!P.isCompleted,puzzleBlob:currentWork.puzzleBlob,previewBlob:preview};
+  const entry={id:currentWork.id,date:currentWork.date,mode:currentWork.mode,level:currentWork.level,query:currentWork.query||'',index:currentWork.index||0,depth:P.depth,cols:P.cols,rows:P.rows,colors:P.pal.count,elapsed:Math.floor(curElapsedMs()/1000),time:fmtTime(curElapsedMs()),completed:!!P.isCompleted,puzzleBlob:currentWork.puzzleBlob,previewBlob:preview};
   if(!P.isCompleted){entry.filled=encodeRLE(P.filled);entry.filledCount=P.filledCount;entry.total=P.total;if(P.wrong.size)entry.wrong=Array.from(P.wrong.entries());}
   if(Array.isArray(currentWork.pal))entry.pal=currentWork.pal;
   entry.bytes=entryBytes(entry);
@@ -704,7 +754,7 @@ function render(){if(!P||!ctx)return;const m=metrics();if(m.W<=0||m.H<=0){dirty=
  if(numCursor<numTotalVis)dirty=true;}
 (function loop(){if(stripAnim){const t=(performance.now()-stripAnim.t0)/stripAnim.dur;if(t>=1){stripOffset=stripAnim.to;stripAnim=null;}else{const e=1-Math.pow(1-t,3);stripOffset=stripAnim.from+(stripAnim.to-stripAnim.from)*e;}renderStrip();}if(dirty){dirty=false;render();}if(saveQueued&&performance.now()-lastPersistTs>=1200)persistNow();requestAnimationFrame(loop);})();
 
-/* §12 painting — wrong fills keep the correct number, never count as progress */
+/* §12 painting */
 function cellFromXY(x,y){const rect=stage.getBoundingClientRect(),m=metrics();const c=Math.floor((x-rect.left-m.dx)/m.cell),r=Math.floor((y-rect.top-m.dy)/m.cell);if(c<0||r<0||c>=P.cols||r>=P.rows)return null;return{c,r};}
 let lastPaint=-1;
 function paintAtXY(x,y){
@@ -715,9 +765,9 @@ function paintAtXY(x,y){
  if(P.filled[i])return;
  const pi=P.indexMap[i];
  if(pi!==P.selected){
-  if(bucketOn)return;                 /* bucket never fires on a wrong number */
-  if(!settings.allowWrong)return;     /* wrong fills disabled: silent no-op */
-  paintWrongCell(cell.c,cell.r);      /* allowed: paint color, keep number, no progress */
+  if(bucketOn)return;
+  if(!settings.allowWrong)return;
+  paintWrongCell(cell.c,cell.r);
   return;
  }
  if(bucketOn)floodFill(cell.c,cell.r,pi);
@@ -738,12 +788,12 @@ function locate(){if(!P||P.selected<0){showToast('請先選擇顏色');return;}c
 function toggleBucket(){bucketOn=!bucketOn;setToolColor();updateBucketUI();showToast(bucketOn?'🪣 油漆桶開啟：只會對正確編號整片填滿':'🖌️ 油漆桶關閉：單格填色');}
 function updateBucketUI(){document.body.classList.toggle('bucket-on',bucketOn);$('tool-btn').classList.toggle('active',bucketOn);$('tool-btn').setAttribute('aria-pressed',bucketOn?'true':'false');}
 
-/* §13 gestures: tap=single, drag=pan, long-press=trail paint w/ ring */
+/* §13 gestures */
 function setPaintUI(v){document.body.classList.toggle('painting',!!v);}
 function showRing(x,y){const r=$('paint-ring'),rect=stage.getBoundingClientRect();r.style.display='block';r.style.left=(x-rect.left)+'px';r.style.top=(y-rect.top)+'px';}
 function hideRing(){$('paint-ring').style.display='none';}
 function moveToolCursor(e){const rect=stage.getBoundingClientRect(),tc=$('tool-cursor');tc.style.left=(e.clientX-rect.left)+'px';tc.style.top=(e.clientY-rect.top)+'px';}
-function zoomAt(px,py,factor){const m=metrics(),u=(px-m.dx)/m.cell,v=(py-m.dy)/m.cell;const ns=clamp(view.scale*factor,1,maxScale()),cell2=m.base*ns;view.scale=ns;view.tx=px-u*cell2-(m.W-P.cols*cell2)/2;view.ty=py-v*cell2-(m.H-P.cols*cell2)/2;applyView();}
+function zoomAt(px,py,factor){const m=metrics(),u=(px-m.dx)/m.cell,v=(py-m.dy)/m.cell;const ns=clamp(view.scale*factor,1,maxScale()),cell2=m.base*ns;view.scale=ns;view.tx=px-u*cell2-(m.W-P.cols*cell2)/2;view.ty=py-v*cell2-(m.H-P.rows*cell2)/2;applyView();}
 function clearGesture(){if(gesture&&gesture.timer)clearTimeout(gesture.timer);gesture=null;hideRing();setPaintUI(false);}
 function setupStage(){stage=$('canvas-container');
  const startPinch=()=>{clearGesture();const[a,b]=[...pointers.values()],rect=stage.getBoundingClientRect();const mid={x:(a.x+b.x)/2-rect.left,y:(a.y+b.y)/2-rect.top},m=metrics();pinch={d0:Math.hypot(a.x-b.x,a.y-b.y)||1,s0:view.scale,u:(mid.x-m.dx)/m.cell,v:(mid.y-m.dy)/m.cell};};
@@ -780,11 +830,12 @@ function fmtTime(ms){const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.flo
 function startTimer(){if(timerId){clearInterval(timerId);timerId=null;}if(!P||P.isCompleted)return;if(!P.runTs)P.runTs=Date.now();const t=()=>{$('timer').textContent=fmtTime(curElapsedMs());};t();timerId=setInterval(t,500);}
 function stopTimer(){if(timerId){clearInterval(timerId);timerId=null;}if(P&&P.runTs){P.elapsedMs+=Date.now()-P.runTs;P.runTs=0;}}
 function updateProgress(){const pct=P.total?Math.round(P.filledCount/P.total*100):0;const c=$('progress-circle'),C=2*Math.PI*c.r.baseVal.value;c.style.strokeDasharray=`${C} ${C}`;c.style.strokeDashoffset=C-(pct/100)*C;$('progress-text').textContent=pct+'%';}
-function enterGame(msg){revokeAll();showScreen('screen-game');clearGesture();pinch=null;pointers.clear();const d=depthInfo(P.depth);$('hud-sub').textContent=(currentWork.mode==='online'?`Lv.${currentWork.level}`:'照片')+`・${d.en}`;$('timer').textContent=fmtTime(curElapsedMs());updateProgress();updateStripInfo();setToolColor();const init=(tries=0)=>{const el=$('canvas-container');if(el.clientWidth>0&&el.clientHeight>0||tries>=120){resizeMainCanvas();resetView();stripOffset=0;stripAnim=null;renderStrip();startTimer();selectFirstAvailable();}else requestAnimationFrame(()=>init(tries+1));};requestAnimationFrame(()=>init());showToast(msg||'👆 短點單填・🖐️ 拖曳移動・⏱️ 長按拖軌填色');}
+function workLabel(w){return w.mode==='online'?`Lv.${w.level}`:w.mode==='search'?`🔍 ${w.query}`:'照片';}
+function enterGame(msg){revokeAll();showScreen('screen-game');clearGesture();pinch=null;pointers.clear();const d=depthInfo(P.depth);$('hud-sub').textContent=`${workLabel(currentWork)}・${d.en}`;$('timer').textContent=fmtTime(curElapsedMs());updateProgress();updateStripInfo();setToolColor();const init=(tries=0)=>{const el=$('canvas-container');if(el.clientWidth>0&&el.clientHeight>0||tries>=120){resizeMainCanvas();resetView();stripOffset=0;stripAnim=null;renderStrip();startTimer();selectFirstAvailable();}else requestAnimationFrame(()=>init(tries+1));};requestAnimationFrame(()=>init());showToast(msg||'👆 短點單填・🖐️ 拖曳移動・⏱️ 長按拖軌填色');}
 function confirmReset(){if(!P)return;const btn=$('reset-btn');if(!resetArmed){resetArmed=true;btn.textContent='⚠️ 再點確認';btn.classList.add('danger-armed');resetArmT=setTimeout(()=>{disarmReset();showToast('已取消重置');},3000);}else{clearTimeout(resetArmT);disarmReset();resetGrid();}}
 function disarmReset(){resetArmed=false;const b=$('reset-btn');b.textContent='↺ 重置';b.classList.remove('danger-armed');}
 function resetGrid(){if(!P)return;const wasCompleted=!!P.isCompleted;stopTimer();P.filled.fill(0);P.filledCount=0;P.isCompleted=false;P.elapsedMs=0;P.runTs=0;P.pal.remaining.set(P.pal.total);P.wrong.clear();P.wrongVersion++;fillGray();P.workCtx.putImageData(P.workImg,0,0);dirtyBox=null;fwBuild();stripPool.forEach(el=>el.remove());stripPool.clear();stripOffset=0;stripAnim=null;flashes.length=0;if(wasCompleted&&currentWork)currentWork=Object.assign({},currentWork,{id:Date.now(),date:new Date().toLocaleDateString('zh-TW')});saveWarned=false;renderStrip();updateStripInfo();updateProgress();selectFirstAvailable();dirty=true;startTimer();persistNow();showToast('↺ 已重置畫布');}
-function win(){stopTimer();P.isCompleted=true;persistNow();if(currentWork.mode==='online'){onlineDone.add(currentWork.level);onlineBest=Math.max(onlineBest,currentWork.level);saveSettings();}setTimeout(()=>{const d=depthInfo(P.depth);const e=worksCache.find(w=>w.id===currentWork.id);$('complete-preview').src=(e&&urlFor(e,'preview'))||makePreviewURLSync(900,.85);$('complete-stats').innerHTML=`<span class="stat-chip">🧱 <b>${fmt(P.total)}</b> 格</span><span class="stat-chip">🎨 <b>${fmt(P.pal.count)}</b> 色</span><span class="stat-chip">⏱ <b>${fmtTime(curElapsedMs())}</b></span><span class="stat-chip" style="border-color:${d.c};color:${d.c}">${d.icon} ${d.name}</span>`+(currentWork.mode==='online'?`<span class="stat-chip">🌐 Lv.<b>${currentWork.level}</b></span>`:'');const note=$('complete-save-note');note.textContent=lastSaveOk?'💾 已自動儲存到「我的作品」':'⚠️ 進度保存失敗（儲存空間不足）';note.classList.toggle('bad',!lastSaveOk);const nb=$('btn-next-level');if(currentWork.mode==='online'){nb.style.display='';nb.textContent=`▶ 下一關 Lv.${currentWork.level+1}`;}else nb.style.display='none';showOverlay('overlay-complete');startConfetti();sndWin();updateStorageUI();},450);}
+function win(){stopTimer();P.isCompleted=true;persistNow();if(currentWork.mode==='online'){onlineDone.add(currentWork.level);onlineBest=Math.max(onlineBest,currentWork.level);saveSettings();}setTimeout(()=>{const d=depthInfo(P.depth);const e=worksCache.find(w=>w.id===currentWork.id);$('complete-preview').src=(e&&urlFor(e,'preview'))||makePreviewURLSync(900,.85);$('complete-stats').innerHTML=`<span class="stat-chip">🧱 <b>${fmt(P.total)}</b> 格</span><span class="stat-chip">🎨 <b>${fmt(P.pal.count)}</b> 色</span><span class="stat-chip">⏱ <b>${fmtTime(curElapsedMs())}</b></span><span class="stat-chip" style="border-color:${d.c};color:${d.c}">${d.icon} ${d.name}</span>`+(currentWork.mode!=='photo'?`<span class="stat-chip">${esc(workLabel(currentWork))}</span>`:'');const note=$('complete-save-note');note.textContent=lastSaveOk?'💾 已自動儲存到「我的作品」':'⚠️ 進度保存失敗（儲存空間不足）';note.classList.toggle('bad',!lastSaveOk);const nb=$('btn-next-level');if(currentWork.mode==='online'){nb.style.display='';nb.textContent=`▶ 下一關 Lv.${currentWork.level+1}`;}else if(currentWork.mode==='search'){nb.style.display='';nb.textContent=`▶ 下一張「${currentWork.query}」`;}else nb.style.display='none';showOverlay('overlay-complete');startConfetti();sndWin();updateStorageUI();},450);}
 function makePreviewURLSync(maxDim,q){const mx=Math.max(P.cols,P.rows);let f=Math.min(maxDim/mx,64);if(f>=1)f=Math.max(1,Math.floor(f));const out=document.createElement('canvas');out.width=Math.max(1,Math.round(P.cols*f));out.height=Math.max(1,Math.round(P.rows*f));const c=out.getContext('2d');c.imageSmoothingEnabled=f<1;c.drawImage(P.workCanvas,0,0,out.width,out.height);return out.toDataURL('image/jpeg',q);}
 function replay(){hideOverlay('overlay-complete');stopConfetti();resetGrid();}
 function goHome(){hideOverlay('overlay-complete');stopConfetti();stopTimer();persistNow();disarmReset();showScreen('screen-menu');}
@@ -799,15 +850,17 @@ function updateResStats(){if(!srcImg)return;const{w,h}=srcDims(),{cols,rows,n}=r
 function enterResScreen(){$('res-preview').src=srcImg.src;const{w,h}=srcDims();let pick=PCTS[PCTS.length-1];for(const p of PCTS){const f=p/100;if(Math.max(2,Math.round(w*f))*Math.max(2,Math.round(h*f))<=AUTO_CELLS){pick=p;break;}}chosenPct=pick;document.querySelectorAll('#pct-chips .chip').forEach(c=>c.classList.toggle('on',+c.dataset.pct===pick));updateResStats();updateStorageUI();showScreen('screen-res');}
 async function startGame(){if(!srcImg){showToast('請先選擇一張照片！');return;}if(!checkStorageAvailable())return;const{cols,rows,n}=resCells();if(n>HARD_CELLS){showToast('⛔ 網格過大，請降低解析度');return;}if(P)persistNow();setLoad('正在把照片切成方格…',0);showOverlay('overlay-loading');try{await buildNewPuzzle(srcImg,cols,rows,depth,{mode:'photo'});hideOverlay('overlay-loading');enterGame();}catch(err){console.error(err);hideOverlay('overlay-loading');showToast('⚠️ 生成失敗：記憶體不足，請降低解析度或色深');}}
 
-/* §16 online */
+/* §16 online levels + prompt search */
 const UNSPLASH=['photo-1506744038136-46273834b3fb','photo-1469474968028-56623f02e42e','photo-1447752875215-b2761acb3c5d','photo-1433086966358-54859d0ed716','photo-1501785888041-af3ef285b470','photo-1470071459604-3b5ec3a7fe05','photo-1441974231531-c6227db76b6e','photo-1502082553048-f009c37129b9','photo-1472214103451-9374bd1c798e','photo-1509316975850-ff9c5deb0cd9','photo-1513836279014-a89f7a76ae86','photo-1518495973542-4542c06a5843','photo-1465146344425-f00d5f5c8f07','photo-1482938289607-e9573fc25ebb','photo-1507525428034-b723cf961d3e','photo-1519046904884-53103b34b206','photo-1500534314209-a25ddb2bd429','photo-1493246507139-91e8fad9978e','photo-1476514525535-07fb3b4ae5f1','photo-1506905925346-21bda4d32df4','photo-1464822759023-fed622ff2c3b','photo-1454496522488-7a8e488e8606','photo-1519681393784-d120267933ba','photo-1497436072909-60f360e1d4b1'];
 let onlineCache={level:0,img:null,url:null,source:''},fetchSeq=0,attemptCtl=null,netCooldownUntil=0,onlineDebounce=0,fallbackToastShown=0;
+let searchResults=[],searchIndex=0,searchCache={img:null,url:null,source:'',query:'',index:-1},searchSeq=0,searchBusy=false;
 function levelDims(l){const A=[[4,3],[1,1],[3,4],[16,10],[3,2],[4,5]][(l-1)%6];const md=Math.min(24+(l-1)*6,240);let cols,rows;if(A[0]>=A[1]){cols=md;rows=Math.max(12,Math.round(md*A[1]/A[0]));}else{rows=md;cols=Math.max(12,Math.round(md*A[0]/A[1]));}return{cols,rows};}
 function levelScale(cols,rows){return Math.max(2,Math.min(10,Math.round(600/Math.max(cols,rows))));}
 function mulberry(seed){let a=seed>>>0;return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 function unsplashURL(l,W,H){const r=mulberry(l*97+13);const id=UNSPLASH[Math.floor(r()*UNSPLASH.length)];const fx=(0.2+0.6*r()).toFixed(2),fy=(0.2+0.6*r()).toFixed(2),fz=(1.2+0.6*r()).toFixed(2);return `https://images.unsplash.com/${id}?auto=format&fit=crop&crop=focalpoint&fp-x=${fx}&fp-y=${fy}&fp-z=${fz}&w=${W}&h=${H}&q=80`;}
 function picsumURL(l,W,H){return `https://picsum.photos/seed/snappaint-${l}/${W}/${H}`;}
-function makeOfflineArt(level,W,H){const r=mulberry(level*2654435761+12345);const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');const pick=a=>a[Math.floor(r()*a.length)];const style=Math.floor(r()*5);
+function promptStyle(prompt,r){const s=(prompt||'').toLowerCase();if(/city|urban|street|城市|街|夜景/.test(s))return 4;if(/mountain|山|峰/.test(s))return 0;if(/sea|ocean|beach|海|沙灘|浪/.test(s))return 1;if(/flower|花|abstract|抽象|geometry|幾何/.test(s))return 2;if(/hill|field|grass|草原|田|森林|forest|樹/.test(s))return 3;return Math.floor(r()*5);}
+function makeOfflineArt(seed,W,H,prompt){const r=mulberry(seed);const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');const pick=a=>a[Math.floor(r()*a.length)];const style=promptStyle(prompt,r);
  const grad=(stops)=>{const g=x.createLinearGradient(0,0,0,H);stops.forEach((s,i)=>g.addColorStop(i/(stops.length-1),s));return g;};
  if(style===0){const skies=[['#0B1D3A','#2E4A7A','#F2A65A'],['#1A1030','#5A2A6A','#FF7E5F'],['#0E2A3A','#1F6F78','#F6D365'],['#2B1055','#7597DE','#FFB6B9']];const si=Math.floor(r()*skies.length);x.fillStyle=grad(skies[si]);x.fillRect(0,0,W,H);for(let i=0;i<60;i++){x.fillStyle=`rgba(255,255,255,${.3+.7*r()})`;x.fillRect(r()*W,r()*H*.4,1.5,1.5);}const sx=W*(.2+.6*r()),sy=H*(.28+.2*r()),sr=Math.min(W,H)*(.08+.06*r());const sg=x.createRadialGradient(sx,sy,0,sx,sy,sr*4);sg.addColorStop(0,'rgba(255,240,200,.9)');sg.addColorStop(.25,'rgba(255,200,120,.5)');sg.addColorStop(1,'rgba(255,200,120,0)');x.fillStyle=sg;x.fillRect(0,0,W,H);x.fillStyle='#FFF3D6';x.beginPath();x.arc(sx,sy,sr,0,7);x.fill();const ridges=[['#5A7A9A','#42607E','#2C4660','#182C40'],['#7A5A8A','#5C4270','#3E2C50','#241A34'],['#3A7A7A','#2C5C5C','#1E4040','#122828'],['#8A6A9A','#6A4E7E','#4A3660','#2A1E3C']][si];for(let L=0;L<4;L++){const baseY=H*(.45+.13*L),amp=H*(.16-.02*L);x.fillStyle=ridges[L];x.beginPath();x.moveTo(0,H);const steps=36;let hs=[];for(let i=0;i<=steps;i++)hs.push(baseY-amp*(.25+.75*r()));for(let i=1;i<steps;i++)hs[i]=(hs[i-1]+hs[i]*2+hs[i+1])/4;x.lineTo(0,hs[0]);for(let i=1;i<=steps;i++)x.lineTo(W*i/steps,hs[i]);x.lineTo(W,H);x.closePath();x.fill();}x.strokeStyle='rgba(20,20,30,.6)';x.lineWidth=2;for(let i=0;i<4;i++){const bx=W*r(),by=H*(.15+.25*r()),s=4+4*r();x.beginPath();x.arc(bx-s,by,s,Math.PI*1.1,Math.PI*1.9);x.arc(bx+s,by,s,Math.PI*1.1,Math.PI*1.9);x.stroke();}}
  else if(style===1){x.fillStyle=grad(['#2A1A4A','#C44569','#F8B195']);x.fillRect(0,0,W,H);const hy=H*.55,sx=W*(.3+.4*r()),sr=Math.min(W,H)*.14;const sg=x.createRadialGradient(sx,hy,0,sx,hy,sr*3);sg.addColorStop(0,'rgba(255,220,150,.9)');sg.addColorStop(1,'rgba(255,220,150,0)');x.fillStyle=sg;x.fillRect(0,0,W,H);x.fillStyle='#FFE9B0';x.beginPath();x.arc(sx,hy,sr,Math.PI,0);x.fill();for(let y=hy;y<H;y+=5){const t=(y-hy)/(H-hy);x.fillStyle=`rgba(${Math.round(248-200*t)},${Math.round(177-120*t)},${Math.round(149-60*t)},1)`;x.fillRect(0,y,W,5);}for(let i=0;i<120;i++){const y=hy+r()*(H-hy);const wdt=4+r()*20;x.fillStyle=`rgba(255,230,170,${.15+.4*r()})`;x.fillRect(sx-wdt/2+(r()-.5)*40,y,wdt,2);}}
@@ -819,28 +872,120 @@ function setCache(l,img,url,source){if(onlineCache.url&&onlineCache.url.startsWi
 function abortErr(){const e=new Error('aborted');e.name='AbortError';return e;}
 async function fetchLevel(l,onStatus){if(onlineCache.level===l&&onlineCache.img)return onlineCache.img;const{cols,rows}=levelDims(l),s=levelScale(cols,rows),W=cols*s,H=rows*s;const mode=settings.srcMode||'auto';let order;if(mode==='offline')order=[];else if(mode==='unsplash')order=['unsplash'];else if(mode==='picsum')order=['picsum'];else order=settings.lastGood==='picsum'?['picsum','unsplash']:['unsplash','picsum'];if(navigator.onLine===false)order=[];const mySeq=++fetchSeq;if(attemptCtl)attemptCtl.abort();const timeout=Date.now()<netCooldownUntil?2500:7000;
  for(const src of order){if(fetchSeq!==mySeq)throw abortErr();onStatus&&onStatus(`連線 ${src==='unsplash'?'Unsplash':'Picsum'}…`);const ctl=new AbortController();attemptCtl=ctl;const to=setTimeout(()=>ctl.abort(),timeout);try{const url=src==='unsplash'?unsplashURL(l,W,H):picsumURL(l,W,H);const res=await fetch(url,{signal:ctl.signal,mode:'cors'});if(!res.ok)throw new Error('HTTP');const blob=await res.blob();if(!/^image\//.test(blob.type))throw new Error('type');const ourl=URL.createObjectURL(blob);const img=await loadImg(ourl);clearTimeout(to);if(fetchSeq!==mySeq){URL.revokeObjectURL(ourl);throw abortErr();}setCache(l,img,ourl,src);settings.lastGood=src;saveSettings();return img;}catch(e){clearTimeout(to);if(fetchSeq!==mySeq)throw abortErr();}}
- if(fetchSeq!==mySeq)throw abortErr();if(order.length)netCooldownUntil=Date.now()+60000;onStatus&&onStatus('產生離線關卡…');const art=makeOfflineArt(l,W,H);const url=art.toDataURL('image/png');const img=await loadImg(url);if(fetchSeq!==mySeq)throw abortErr();setCache(l,img,url,'offline');return img;}
-function srcName(s){return s==='unsplash'?'Unsplash':s==='picsum'?'Picsum':s==='offline'?'⚡ 離線生成':'—';}
-function updateOnlineUI(){const{cols,rows}=levelDims(onlineLevel),d=depthInfo(depth);$('online-level-num').textContent=`Lv.${onlineLevel}`;$('online-ph-text').textContent=`Lv.${onlineLevel}`;$('online-done-badge').textContent=onlineDone.has(onlineLevel)?'✅ 已通關':'';$('online-best').textContent=onlineBest?`🏅 最高完成 Lv.${onlineBest}`:'♾️ 從 Lv.1 開始挑戰';$('online-prev').disabled=onlineLevel<=1;$('online-stats').textContent=`${cols} × ${rows} ＝ ${fmt(cols*rows)} 格`;$('online-colors').textContent=`難度 ${d.icon} ${d.name}・上限 ${fmt(Math.min(d.L**3,cols*rows))} 色（⚙️ 設定可改）`;$('online-preview-box').style.aspectRatio=`${cols}/${rows}`;const ready=onlineCache.level===onlineLevel&&onlineCache.img;$('btn-start-online').disabled=!ready;$('btn-start-online').textContent=ready?`🎨 開始 Lv.${onlineLevel}`:'⏳ 載入關卡…';const badge=$('src-badge');if(ready){badge.textContent=srcName(onlineCache.source);badge.classList.toggle('off',onlineCache.source==='offline');}else{badge.textContent='—';badge.classList.remove('off');}}
-function setOnlineLoading(){$('online-shimmer').classList.add('show');$('online-error').classList.remove('show');$('online-preview').classList.remove('ready');$('online-ph').classList.remove('hide');$('btn-start-online').disabled=true;$('btn-start-online').textContent='⏳ 載入關卡…';}
-function setOnlineReady(){if(onlineCache.level!==onlineLevel)return;const img=$('online-preview');img.src=onlineCache.url;img.classList.add('ready');$('online-ph').classList.add('hide');$('online-shimmer').classList.remove('show');$('online-error').classList.remove('show');$('btn-start-online').disabled=false;$('btn-start-online').textContent=`🎨 開始 Lv.${onlineLevel}`;updateOnlineUI();if(onlineCache.source==='offline'&&(settings.srcMode||'auto')!=='offline'&&fallbackToastShown!==onlineLevel){fallbackToastShown=onlineLevel;showToast('📡 無法連線，已改用離線生成關卡');}}
+ if(fetchSeq!==mySeq)throw abortErr();if(order.length)netCooldownUntil=Date.now()+60000;onStatus&&onStatus('產生離線關卡…');const art=makeOfflineArt(l*2654435761+12345,W,H,'');const url=art.toDataURL('image/png');const img=await loadImg(url);if(fetchSeq!==mySeq)throw abortErr();setCache(l,img,url,'offline');return img;}
+function srcName(s){return s==='unsplash'?'Unsplash':s==='picsum'?'Picsum':s==='commons'?'Wikimedia Commons':s==='offline'?'⚡ 離線生成':'—';}
+function setPreview(url){const img=$('online-preview');if(url){img.src=url;img.classList.add('ready');$('online-ph').classList.add('hide');}else{img.removeAttribute('src');img.classList.remove('ready');$('online-ph').classList.remove('hide');}}
+function setOnlineLoading(){$('online-shimmer').classList.add('show');$('online-error').classList.remove('show');setPreview(null);$('btn-start-online').disabled=true;$('btn-start-online').textContent='⏳ 載入中…';}
 function setOnlineError(){$('online-shimmer').classList.remove('show');$('online-error').classList.add('show');$('btn-start-online').disabled=true;}
-async function refreshOnlinePreview(force){const l=onlineLevel;updateOnlineUI();if(onlineCache.level===l&&onlineCache.img&&!force){setOnlineReady();return;}setOnlineLoading();try{await fetchLevel(l,t=>setLoad(t,.3));if(onlineLevel===l)setOnlineReady();}catch(e){if(e&&e.name==='AbortError')return;if(onlineLevel===l)setOnlineError();}}
+function setOnlineReadyLevel(){if(onlineCache.level!==onlineLevel)return;setPreview(onlineCache.url);$('online-shimmer').classList.remove('show');$('online-error').classList.remove('show');$('btn-start-online').disabled=false;$('btn-start-online').textContent=`🎨 開始 Lv.${onlineLevel}`;updateOnlineUI();if(onlineCache.source==='offline'&&(settings.srcMode||'auto')!=='offline'&&fallbackToastShown!==onlineLevel){fallbackToastShown=onlineLevel;showToast('📡 無法連線，已改用離線生成關卡');}}
+function updateOnlineUI(){
+ const isSearch=onlineMode==='search';
+ $('mode-level').classList.toggle('on',!isSearch);$('mode-search').classList.toggle('on',isSearch);
+ $('level-mode').style.display=isSearch?'none':'';$('search-mode').style.display=isSearch?'':'none';
+ $('src-label').style.display=isSearch?'none':'';$('src-select').style.display=isSearch?'none':'';
+ $('online-title').textContent=isSearch?'🔍 提示搜尋圖片':'🌐 線上關卡 ∞';
+ const d=depthInfo(depth);
+ if(isSearch){
+  if(document.activeElement!==$('search-input'))$('search-input').value=searchQuery;
+  $('search-size').value=String(searchSize);
+  $('online-ph-text').textContent=searchQuery?`「${searchQuery}」`:'提示搜尋';
+  const ready=searchCache.img&&searchCache.query===searchQuery&&searchCache.index===searchIndex;
+  if(ready){const{cols,rows}=searchDims(searchCache.img);$('online-stats').textContent=`${cols} × ${rows} ＝ ${fmt(cols*rows)} 格`;$('online-preview-box').style.aspectRatio=`${cols}/${rows}`;setPreview(searchCache.url);$('btn-start-online').disabled=false;$('btn-start-online').textContent=`🎨 開始「${searchQuery}」`;}
+  else{$('online-stats').textContent='— × —';$('online-preview-box').style.aspectRatio='4/3';if(!searchBusy)setPreview(null);$('btn-start-online').disabled=true;$('btn-start-online').textContent=searchResults.length?'⏳ 載入圖片…':'🔍 先搜尋圖片';}
+  $('online-colors').textContent=`難度 ${d.icon} ${d.name}・上限 ${fmt(d.L**3)} 色（⚙️ 設定可改）`;
+  const badge=$('src-badge');badge.textContent=ready?srcName(searchCache.source):(searchResults.length?srcName(searchResults[0].source):'—');badge.classList.toggle('off',ready&&searchCache.source==='offline');
+  $('online-hint').innerHTML='🔍 用提示搜尋真實圖片（來源：Wikimedia Commons）。<br>無法連線或找不到結果時，自動改用離線主題圖。';
+ }else{
+  const{cols,rows}=levelDims(onlineLevel);
+  $('online-level-num').textContent=`Lv.${onlineLevel}`;$('online-ph-text').textContent=`Lv.${onlineLevel}`;
+  $('online-done-badge').textContent=onlineDone.has(onlineLevel)?'✅ 已通關':'';
+  $('online-best').textContent=onlineBest?`🏅 最高完成 Lv.${onlineBest}`:'♾️ 從 Lv.1 開始挑戰';
+  $('online-prev').disabled=onlineLevel<=1;
+  $('online-stats').textContent=`${cols} × ${rows} ＝ ${fmt(cols*rows)} 格`;
+  $('online-colors').textContent=`難度 ${d.icon} ${d.name}・上限 ${fmt(Math.min(d.L**3,cols*rows))} 色（⚙️ 設定可改）`;
+  $('online-preview-box').style.aspectRatio=`${cols}/${rows}`;
+  const ready=onlineCache.level===onlineLevel&&onlineCache.img;
+  $('btn-start-online').disabled=!ready;$('btn-start-online').textContent=ready?`🎨 開始 Lv.${onlineLevel}`:'⏳ 載入關卡…';
+  const badge=$('src-badge');if(ready){badge.textContent=srcName(onlineCache.source);badge.classList.toggle('off',onlineCache.source==='offline');}else{badge.textContent='—';badge.classList.remove('off');}
+  $('online-hint').innerHTML='♾️ 關卡無限：尺寸隨關卡遞增。難度請到 ⚙️ 設定調整。<br>無法連線時自動改用離線生成關卡，永遠可玩。';
+ }
+}
+async function refreshOnlinePreview(force){if(onlineMode!=='level')return;const l=onlineLevel;updateOnlineUI();if(onlineCache.level===l&&onlineCache.img&&!force){setOnlineReadyLevel();return;}setOnlineLoading();try{await fetchLevel(l,t=>setLoad(t,.3));if(onlineLevel===l&&onlineMode==='level')setOnlineReadyLevel();}catch(e){if(e&&e.name==='AbortError')return;if(onlineLevel===l&&onlineMode==='level')setOnlineError();}}
 function setOnlineLevel(l){onlineLevel=Math.max(1,Math.min(999999,l|0||1));saveSettings();$('online-jump').value='';updateOnlineUI();clearTimeout(onlineDebounce);onlineDebounce=setTimeout(()=>refreshOnlinePreview(),260);}
-async function playOnline(l){l=Math.max(1,l|0);if(!checkStorageAvailable())return;if(P)persistNow();onlineLevel=l;saveSettings();setLoad(`下載 Lv.${l} 關卡圖片…`,.02);showOverlay('overlay-loading');try{const img=await fetchLevel(l,t=>setLoad(t,.1));const{cols,rows}=levelDims(l);await buildNewPuzzle(img,cols,rows,depth,{mode:'online',level:l});hideOverlay('overlay-loading');enterGame(`🌐 Lv.${l} 開始！`);}catch(err){console.error(err);hideOverlay('overlay-loading');showToast('⚠️ 關卡載入失敗');showScreen('screen-online');setOnlineError();}}
+async function playOnline(l){l=Math.max(1,l|0);if(!checkStorageAvailable())return;if(P)persistNow();onlineLevel=l;onlineMode='level';saveSettings();setLoad(`下載 Lv.${l} 關卡圖片…`,.02);showOverlay('overlay-loading');try{const img=await fetchLevel(l,t=>setLoad(t,.1));const{cols,rows}=levelDims(l);await buildNewPuzzle(img,cols,rows,depth,{mode:'online',level:l});hideOverlay('overlay-loading');enterGame(`🌐 Lv.${l} 開始！`);}catch(err){console.error(err);hideOverlay('overlay-loading');showToast('⚠️ 關卡載入失敗');showScreen('screen-online');setOnlineError();}}
+/* ---- prompt search ---- */
+function searchDims(img){const long=searchSize,w=img.naturalWidth,h=img.naturalHeight;let cols,rows;if(w>=h){cols=long;rows=Math.max(12,Math.round(long*h/w));}else{rows=long;cols=Math.max(12,Math.round(long*w/h));}return{cols,rows};}
+function revokeSearchCache(){if(searchCache.url&&searchCache.url.startsWith('blob:'))URL.revokeObjectURL(searchCache.url);searchCache={img:null,url:null,source:'',query:'',index:-1};}
+async function searchCommons(q,signal){
+ const url=`https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(q)}&gsrnamespace=6&gsrlimit=24&prop=imageinfo&iiprop=url%7Cmime%7Csize&iiurlwidth=640&format=json&origin=*`;
+ const res=await fetch(url,{signal,mode:'cors'});if(!res.ok)throw new Error('HTTP');
+ const j=await res.json();const pages=j.query&&j.query.pages?Object.values(j.query.pages):[];
+ pages.sort((a,b)=>(a.index||0)-(b.index||0));
+ const out=[];
+ for(const p of pages){const ii=p.imageinfo&&p.imageinfo[0];if(!ii||!/^image\/(jpeg|png|webp)$/.test(ii.mime||''))continue;if((ii.width||0)<160||(ii.height||0)<160)continue;const u=ii.thumburl||ii.url;if(!u)continue;out.push({id:'c'+p.pageid,title:String(p.title||'').replace(/^File:/,''),thumb:u,url:u,width:ii.width,height:ii.height,source:'commons'});}
+ return out.slice(0,18);
+}
+function searchOfflineResults(q){const base=hashStr(q),out=[];for(let i=0;i<8;i++){const seed=(base+i*104729)>>>0;const c=makeOfflineArt(seed,320,240,q);out.push({id:'o'+seed,title:`${q}・離線圖 ${i+1}`,thumb:c.toDataURL('image/png'),url:null,seed,width:640,height:480,source:'offline'});}return out;}
+async function fetchSearchResults(q){
+ const mySeq=++searchSeq;const ctl=new AbortController();const to=setTimeout(()=>ctl.abort(),8000);
+ try{const r=await searchCommons(q,ctl.signal);clearTimeout(to);if(mySeq!==searchSeq)throw abortErr();if(r.length)return r;}catch(e){clearTimeout(to);if(mySeq!==searchSeq)throw abortErr();}
+ if(mySeq!==searchSeq)throw abortErr();
+ return searchOfflineResults(q);
+}
+function renderSearchResults(){
+ const box=$('search-results');box.innerHTML='';
+ if(searchBusy){box.innerHTML='<div class="sr-loading">🔍 搜尋中…</div>';$('search-count').textContent='';return;}
+ if(!searchResults.length){box.innerHTML='<div class="sr-empty">輸入提示後按 🔍 搜尋圖片</div>';$('search-count').textContent='';return;}
+ searchResults.forEach((r,i)=>{const b=document.createElement('button');b.type='button';b.className='sr-item'+(i===searchIndex?' on':'');b.dataset.i=i;b.title=r.title;const img=document.createElement('img');img.loading='lazy';img.alt=r.title;img.src=r.thumb;img.onerror=()=>{img.style.visibility='hidden';};b.appendChild(img);const lab=document.createElement('span');lab.textContent=String(i+1);b.appendChild(lab);box.appendChild(b);});
+ $('search-count').textContent=`${searchResults.length} 張・${srcName(searchResults[0].source)}`;
+}
+async function loadSearchImage(r){
+ if(r.source==='offline'){const c=makeOfflineArt(r.seed,640,480,searchQuery);const url=c.toDataURL('image/png');return{img:await loadImg(url),url};}
+ const res=await fetch(r.url,{mode:'cors'});if(!res.ok)throw new Error('HTTP');const blob=await res.blob();if(!/^image\//.test(blob.type))throw new Error('type');const url=URL.createObjectURL(blob);return{img:await loadImg(url),url};
+}
+async function selectSearchResult(i){
+ if(!searchResults.length)return;
+ searchIndex=clamp(i,0,searchResults.length-1);renderSearchResults();setOnlineLoading();searchBusy=true;updateOnlineUI();
+ try{const r=searchResults[searchIndex];const{img,url}=await loadSearchImage(r);revokeSearchCache();searchCache={img,url,source:r.source,query:searchQuery,index:searchIndex};searchBusy=false;$('online-shimmer').classList.remove('show');$('online-error').classList.remove('show');updateOnlineUI();}
+ catch(e){searchBusy=false;if(e&&e.name==='AbortError')return;setOnlineError();updateOnlineUI();}
+}
+async function runSearch(q){
+ q=String(q||'').trim();if(!q){showToast('請輸入提示關鍵字');return;}
+ onlineMode='search';searchQuery=q;searchIndex=0;saveSettings();revokeSearchCache();searchResults=[];searchBusy=true;renderSearchResults();setOnlineLoading();updateOnlineUI();
+ try{searchResults=await fetchSearchResults(q);searchBusy=false;renderSearchResults();if(searchResults.length)await selectSearchResult(0);else{setOnlineError();updateOnlineUI();}}
+ catch(e){searchBusy=false;if(e&&e.name==='AbortError')return;searchResults=searchOfflineResults(q);renderSearchResults();if(searchResults.length)await selectSearchResult(0);else{setOnlineError();updateOnlineUI();}}
+}
+async function playSearchSelected(){if(!searchCache.img||searchCache.query!==searchQuery||searchCache.index!==searchIndex){showToast('請先選擇搜尋結果');return;}await playSearchImage(searchQuery,searchIndex,searchCache.img);}
+async function playSearchImage(q,i,img){
+ if(!checkStorageAvailable())return;if(P)persistNow();
+ setLoad(`準備「${q}」…`,.05);showOverlay('overlay-loading');
+ try{const{cols,rows}=searchDims(img);await buildNewPuzzle(img,cols,rows,depth,{mode:'search',query:q,index:i});hideOverlay('overlay-loading');enterGame(`🔍「${q}」開始！`);}
+ catch(e){console.error(e);hideOverlay('overlay-loading');showToast('⚠️ 生成失敗，請改用較小網格或較低難度');}
+}
+async function playSearchResult(q,i){
+ if(!checkStorageAvailable())return;
+ onlineMode='search';searchQuery=q;saveSettings();
+ setLoad(`搜尋「${q}」…`,.05);showOverlay('overlay-loading');
+ try{
+  if(!searchResults.length||searchCache.query!==q){searchResults=await fetchSearchResults(q);}
+  const idx=((i%searchResults.length)+searchResults.length)%searchResults.length;searchIndex=idx;
+  const{img,url}=await loadSearchImage(searchResults[idx]);revokeSearchCache();searchCache={img,url,source:searchResults[idx].source,query:q,index:idx};
+  hideOverlay('overlay-loading');await playSearchImage(q,idx,img);
+ }catch(e){console.error(e);hideOverlay('overlay-loading');showToast('⚠️ 載入失敗');}
+}
 
 /* §17 resume */
-async function rebuildFromSave(data){const img=await loadImg(urlFor(data,'puzzle'));const cols=data.cols,rows=data.rows,n=cols*rows,L=data.depth||16;const px=gridCanvas(img,cols,rows);let a;if(Array.isArray(data.pal)&&data.pal.length){a=await analyzeLegacy(px,n,L,data.pal,p=>setLoad('恢復色盤（舊版存檔）…',.05+p*.65));}else{a=await analyzePixels(px,n,L,p=>setLoad('恢復色盤…',.05+p*.6));setLoad('排序色盤…',.7);await tick();sortPalette(a);}const filled=data.filled?decodeRLE(data.filled,n):new Uint8Array(n);setLoad('重建畫布…',.75);await tick();await assemblePuzzle(cols,rows,L,a,filled,(data.elapsed||0)*1000,p=>setLoad('重建畫布…',.75+p*.2),data.wrong);currentWork={id:data.id,date:data.date||new Date().toLocaleDateString('zh-TW'),mode:data.mode||'photo',level:data.level||0,depth:L,cols,rows,puzzleBlob:data.puzzleBlob,pal:Array.isArray(data.pal)?data.pal:undefined};saveWarned=false;}
+async function rebuildFromSave(data){const img=await loadImg(urlFor(data,'puzzle'));const cols=data.cols,rows=data.rows,n=cols*rows,L=data.depth||16;const px=gridCanvas(img,cols,rows);let a;if(Array.isArray(data.pal)&&data.pal.length){a=await analyzeLegacy(px,n,L,data.pal,p=>setLoad('恢復色盤（舊版存檔）…',.05+p*.65));}else{a=await analyzePixels(px,n,L,p=>setLoad('恢復色盤…',.05+p*.6));setLoad('排序色盤…',.7);await tick();sortPalette(a);}const filled=data.filled?decodeRLE(data.filled,n):new Uint8Array(n);setLoad('重建畫布…',.75);await tick();await assemblePuzzle(cols,rows,L,a,filled,(data.elapsed||0)*1000,p=>setLoad('重建畫布…',.75+p*.2),data.wrong);currentWork={id:data.id,date:data.date||new Date().toLocaleDateString('zh-TW'),mode:data.mode||'photo',level:data.level||0,query:data.query||'',index:data.index||0,depth:L,cols,rows,puzzleBlob:data.puzzleBlob,pal:Array.isArray(data.pal)?data.pal:undefined};saveWarned=false;}
 function resumeWork(id){const data=loadWorks().find(w=>w.id===id&&!w.completed);if(!data){showToast('找不到這筆存檔');refreshResumeBtn();return;}if(!data.puzzleBlob){showToast('存檔損壞，請刪除後重新開始');return;}if(P)persistNow();setLoad('正在恢復進度…',0);showOverlay('overlay-loading');setTimeout(async()=>{try{await rebuildFromSave(data);hideOverlay('overlay-loading');const pct=P.total?Math.round(P.filledCount/P.total*100):0;enterGame(`▶️ 已恢復進度（${pct}%）`);}catch(err){console.error(err);hideOverlay('overlay-loading');showToast('⚠️ 恢復失敗');}},80);}
-function refreshResumeBtn(){const list=loadWorks().filter(w=>!w.completed).sort((a,b)=>b.id-a.id),btn=$('resume-btn');if(list.length){const w=list[0],pct=w.total?Math.round((w.filledCount||0)/w.total*100):0;btn.style.display='';btn.textContent=`▶️ 繼續未完成作品（${pct}%${w.mode==='online'?`・Lv.${w.level}`:''}）`;}else btn.style.display='none';}
+function refreshResumeBtn(){const list=loadWorks().filter(w=>!w.completed).sort((a,b)=>b.id-a.id),btn=$('resume-btn');if(list.length){const w=list[0],pct=w.total?Math.round((w.filledCount||0)/w.total*100):0;btn.style.display='';btn.textContent=`▶️ 繼續未完成作品（${pct}%・${workLabel(w)}）`;}else btn.style.display='none';}
 function resumeLatest(){const list=loadWorks().filter(w=>!w.completed).sort((a,b)=>b.id-a.id);if(list.length)resumeWork(list[0].id);else showToast('目前沒有未完成的作品');}
 
 /* §18 gallery / viewer */
 function showGallery(){updateStorageUI();revokeAll();const grid=$('gallery-grid');grid.innerHTML='';const list=loadWorks();if(!list.length){grid.innerHTML='<p class="empty-msg">尚無作品<br>開始挑戰後進度會自動保存在這裡 🎨</p>';return;}const inProg=list.filter(w=>!w.completed).sort((a,b)=>b.id-a.id);const done=list.filter(w=>w.completed).sort((a,b)=>b.id-a.id);inProg.concat(done).forEach(item=>grid.appendChild(makeGalleryCard(item)));}
-function makeGalleryCard(item){const div=document.createElement('div');div.className='gallery-item';const W=item.cols||'?',H=item.rows||'?',d=depthInfo(item.depth||16);const img=urlFor(item,'preview');const modeBadge=item.mode==='online'?`<span class="gi-badge lv">Lv.${item.level}</span>`:`<span class="gi-badge ph">📷</span>`;const meta=`<div class="gallery-meta"><b>${item.date||''}</b><span>${W}×${H}</span><small style="color:${d.c}">${d.icon} ${d.name}・${fmt(item.colors||0)} 色${item.time?'・⏱'+item.time:''}</small></div>`;if(item.completed){div.innerHTML=`<img src="${img}" alt="作品" loading="lazy"><div class="gi-badges"><span class="gi-badge done">✅ 完成</span>${modeBadge}</div><button class="gallery-delete" aria-label="刪除">✕</button>${meta}`;div.addEventListener('click',e=>{if(e.target.closest('.gallery-delete'))return;openViewer(item);});}else{const pct=item.total?Math.round((item.filledCount||0)/item.total*100):0;div.innerHTML=`<img src="${img}" alt="未完成作品" loading="lazy"><div class="gi-badges"><span class="gi-badge">🎨 ${pct}%</span>${modeBadge}</div><button class="gallery-delete" aria-label="刪除">✕</button><div class="gi-progress"><i style="width:${pct}%"></i></div>${meta}<button class="gi-resume" type="button">▶ 繼續完成</button>`;div.addEventListener('click',e=>{if(e.target.closest('.gallery-delete'))return;resumeWork(item.id);});}div.querySelector('.gallery-delete').addEventListener('click',e=>{e.stopPropagation();deleteWork(item.id);});return div;}
+function makeGalleryCard(item){const div=document.createElement('div');div.className='gallery-item';const W=item.cols||'?',H=item.rows||'?',d=depthInfo(item.depth||16);const img=urlFor(item,'preview');const modeBadge=item.mode==='online'?`<span class="gi-badge lv">Lv.${item.level}</span>`:item.mode==='search'?`<span class="gi-badge sq">🔍 ${esc(item.query||'搜尋')}</span>`:`<span class="gi-badge ph">📷</span>`;const meta=`<div class="gallery-meta"><b>${item.date||''}</b><span>${W}×${H}</span><small style="color:${d.c}">${d.icon} ${d.name}・${fmt(item.colors||0)} 色${item.time?'・⏱'+item.time:''}</small></div>`;if(item.completed){div.innerHTML=`<img src="${img}" alt="作品" loading="lazy"><div class="gi-badges"><span class="gi-badge done">✅ 完成</span>${modeBadge}</div><button class="gallery-delete" aria-label="刪除">✕</button>${meta}`;div.addEventListener('click',e=>{if(e.target.closest('.gallery-delete'))return;openViewer(item);});}else{const pct=item.total?Math.round((item.filledCount||0)/item.total*100):0;div.innerHTML=`<img src="${img}" alt="未完成作品" loading="lazy"><div class="gi-badges"><span class="gi-badge">🎨 ${pct}%</span>${modeBadge}</div><button class="gallery-delete" aria-label="刪除">✕</button><div class="gi-progress"><i style="width:${pct}%"></i></div>${meta}<button class="gi-resume" type="button">▶ 繼續完成</button>`;div.addEventListener('click',e=>{if(e.target.closest('.gallery-delete'))return;resumeWork(item.id);});}div.querySelector('.gallery-delete').addEventListener('click',e=>{e.stopPropagation();deleteWork(item.id);});return div;}
 async function deleteWork(id){const ok=await askConfirm({title:'🗑️ 刪除作品',desc:'確定要刪除這幅作品嗎？刪除後可在提示中復原。',ok:'刪除'});if(!ok)return;const entry=loadWorks().find(w=>w.id===id);await removeWork(id);if(currentWork&&currentWork.id===id)currentWork=null;if($('screen-gallery').classList.contains('active'))showGallery();refreshResumeBtn();updateStorageUI();if(entry)showToast('🗑️ 已刪除，已釋放空間',{label:'復原',fn:async()=>{try{await dbPut(entry);cacheUpsert(entry);showToast('✅ 已復原');if($('screen-gallery').classList.contains('active'))showGallery();refreshResumeBtn();updateStorageUI();refreshQuota();}catch(e){showToast('⚠️ 復原失敗：空間不足');}}});}
 let viewerItem=null;const V={s:1,tx:0,ty:0};
-function openViewer(item){viewerItem=item;const img=$('viewer-img');img.src=urlFor(item,'puzzle')||urlFor(item,'preview');const d=depthInfo(item.depth||16);$('viewer-title').textContent=`${item.cols}×${item.rows}・${fmt(item.colors||0)} 色・${d.name}`;$('viewer-sub').textContent=`${item.date||''}・用時 ${item.time||'--'}${item.mode==='online'?`・Lv.${item.level}`:''}`;V.s=1;V.tx=0;V.ty=0;img.style.transform='';showOverlay('overlay-viewer');}
+function openViewer(item){viewerItem=item;const img=$('viewer-img');img.src=urlFor(item,'puzzle')||urlFor(item,'preview');const d=depthInfo(item.depth||16);$('viewer-title').textContent=`${item.cols}×${item.rows}・${fmt(item.colors||0)} 色・${d.name}`;$('viewer-sub').textContent=`${item.date||''}・用時 ${item.time||'--'}・${workLabel(item)}`;V.s=1;V.tx=0;V.ty=0;img.style.transform='';showOverlay('overlay-viewer');}
 function applyV(){const img=$('viewer-img'),st=$('viewer-stage');const ew=img.offsetWidth*V.s,eh=img.offsetHeight*V.s;const mx=Math.max(0,(ew-st.clientWidth)/2),my=Math.max(0,(eh-st.clientHeight)/2);V.tx=clamp(V.tx,-mx,mx);V.ty=clamp(V.ty,-my,my);img.style.transform=`translate(${V.tx}px,${V.ty}px) scale(${V.s})`;}
 function setupViewer(){const st=$('viewer-stage'),vPts=new Map();let vPinch=null,vPan=null,vLastTap=0;st.addEventListener('pointerdown',e=>{try{st.setPointerCapture(e.pointerId);}catch(err){}vPts.set(e.pointerId,{x:e.clientX,y:e.clientY});if(vPts.size===1)vPan={x:e.clientX,y:e.clientY,tx:V.tx,ty:V.ty};else if(vPts.size===2){vPan=null;const[a,b]=[...vPts.values()],rect=st.getBoundingClientRect(),img=$('viewer-img');const mid={x:(a.x+b.x)/2-rect.left,y:(a.y+b.y)/2-rect.top};const ew=img.offsetWidth*V.s,dx=(rect.width-ew)/2+V.tx,dy=(rect.height-img.offsetHeight*V.s)/2+V.ty;vPinch={d0:Math.hypot(a.x-b.x,a.y-b.y)||1,s0:V.s,u:(mid.x-dx)/V.s,v:(mid.y-dy)/V.s};}});st.addEventListener('pointermove',e=>{if(!vPts.has(e.pointerId))return;const p=vPts.get(e.pointerId);p.x=e.clientX;p.y=e.clientY;const r=st.getBoundingClientRect(),img=$('viewer-img');if(vPinch&&vPts.size>=2){const[a,b]=[...vPts.values()],d=Math.hypot(a.x-b.x,a.y-b.y)||1;const mid={x:(a.x+b.x)/2-r.left,y:(a.y+b.y)/2-r.top};V.s=clamp(vPinch.s0*d/vPinch.d0,1,12);V.tx=mid.x-vPinch.u*V.s-(r.width-img.offsetWidth*V.s)/2;V.ty=mid.y-vPinch.v*V.s-(r.height-img.offsetHeight*V.s)/2;applyV();}else if(vPan&&vPts.size===1){V.tx=vPan.tx+(e.clientX-vPan.x);V.ty=vPan.ty+(e.clientY-vPan.y);applyV();}});const vEnd=e=>{if(!vPts.has(e.pointerId))return;const wasOne=vPts.size===1;vPts.delete(e.pointerId);if(vPts.size<2)vPinch=null;if(vPts.size===0){if(wasOne){const now=Date.now();if(now-vLastTap<320){V.s=1;V.tx=0;V.ty=0;applyV();}vLastTap=now;}vPan=null;}};st.addEventListener('pointerup',vEnd);st.addEventListener('pointercancel',vEnd);st.addEventListener('wheel',e=>{e.preventDefault();V.s=clamp(V.s*(e.deltaY<0?1.18:1/1.18),1,12);applyV();},{passive:false});st.addEventListener('contextmenu',e=>e.preventDefault());}
 function downloadViewerItem(){if(!viewerItem)return;const u=urlFor(viewerItem,'puzzle')||urlFor(viewerItem,'preview');downloadURL(u,`SnapPaint_${viewerItem.id}.png`);showToast('⬇️ 已下載');}
@@ -869,16 +1014,22 @@ function bindAll(){
  on('btn-start-game','click',startGame);
  on('btn-res-back','click',()=>showScreen('screen-menu'));
  on('btn-online-back','click',()=>showScreen('screen-menu'));
+ on('mode-level','click',()=>{onlineMode='level';saveSettings();updateOnlineUI();refreshOnlinePreview();});
+ on('mode-search','click',()=>{onlineMode='search';saveSettings();updateOnlineUI();renderSearchResults();if(searchQuery&&!searchResults.length)runSearch(searchQuery);});
+ on('search-go','click',()=>runSearch($('search-input').value));
+ on('search-input','keydown',e=>{if(e.key==='Enter')runSearch(e.target.value);});
+ on('search-size','change',e=>{searchSize=+e.target.value;saveSettings();updateOnlineUI();});
+ $('search-results').addEventListener('click',e=>{const b=e.target.closest('.sr-item');if(b)selectSearchResult(+b.dataset.i);});
  on('online-prev','click',()=>setOnlineLevel(onlineLevel-1));
  on('online-next','click',()=>setOnlineLevel(onlineLevel+1));
  on('online-go','click',()=>{const v=parseInt($('online-jump').value,10);if(Number.isFinite(v)&&v>=1)setOnlineLevel(v);else showToast('請輸入關卡編號');});
  on('online-jump','keydown',e=>{if(e.key==='Enter'){const v=parseInt(e.target.value,10);if(Number.isFinite(v)&&v>=1)setOnlineLevel(v);}});
  on('online-jump','input',e=>{e.target.value=e.target.value.replace(/\D/g,'');});
  on('online-random','click',()=>setOnlineLevel(1+Math.floor(Math.random()*99999)));
- on('online-retry','click',()=>refreshOnlinePreview(true));
- on('online-offline','click',()=>{settings.srcMode='offline';saveSettings();$('src-select').value='offline';refreshOnlinePreview(true);});
+ on('online-retry','click',()=>{if(onlineMode==='search'){if(searchResults.length)selectSearchResult(searchIndex);else if(searchQuery)runSearch(searchQuery);}else refreshOnlinePreview(true);});
+ on('online-offline','click',()=>{if(onlineMode==='search'){searchResults=searchOfflineResults(searchQuery||'snapPaint');searchIndex=0;renderSearchResults();selectSearchResult(0);}else{settings.srcMode='offline';saveSettings();$('src-select').value='offline';refreshOnlinePreview(true);}});
  on('src-select','change',e=>{settings.srcMode=e.target.value;saveSettings();if(onlineCache.url&&onlineCache.url.startsWith('blob:'))URL.revokeObjectURL(onlineCache.url);onlineCache={level:0,img:null,url:null,source:''};refreshOnlinePreview(true);});
- on('btn-start-online','click',()=>playOnline(onlineLevel));
+ on('btn-start-online','click',()=>{if(onlineMode==='search')playSearchSelected();else playOnline(onlineLevel);});
  on('btn-game-back','click',goHome);
  on('tool-btn','click',()=>{if(!P){showToast('🖌️ 油漆桶：開始挑戰後即可使用');return;}toggleBucket();});
  on('reset-btn','click',confirmReset);
@@ -891,7 +1042,7 @@ function bindAll(){
  on('btn-dl','click',downloadCurrent);
  on('btn-replay','click',replay);
  on('btn-home','click',goHome);
- on('btn-next-level','click',()=>{const l=(currentWork&&currentWork.level||0)+1;hideOverlay('overlay-complete');stopConfetti();playOnline(l);});
+ on('btn-next-level','click',()=>{const w=currentWork;hideOverlay('overlay-complete');stopConfetti();if(w.mode==='online')playOnline(w.level+1);else if(w.mode==='search')playSearchResult(w.query,w.index+1);});
  on('btn-viewer-close','click',()=>hideOverlay('overlay-viewer'));
  on('btn-viewer-dl','click',downloadViewerItem);
  on('btn-viewer-del','click',deleteViewerItem);
@@ -911,14 +1062,14 @@ function bindAll(){
  window.addEventListener('pagehide',()=>{if(P)persistNow();});
  window.addEventListener('beforeunload',()=>{if(P)persistNow();});
  document.addEventListener('visibilitychange',()=>{if(document.hidden){if(P){stopTimer();persistNow();}}else if(P&&$('screen-game').classList.contains('active')&&!P.isCompleted)startTimer();});
- window.addEventListener('online',()=>{showToast('📡 網路已恢復');if($('screen-online').classList.contains('active'))refreshOnlinePreview(true);});
- window.addEventListener('offline',()=>{showToast('📡 已離線，將使用離線關卡');});
+ window.addEventListener('online',()=>{showToast('📡 網路已恢復');if($('screen-online').classList.contains('active')){if(onlineMode==='level')refreshOnlinePreview(true);else if(searchQuery)runSearch(searchQuery);}});
+ window.addEventListener('offline',()=>{showToast('📡 已離線，將使用離線主題圖');});
 }
 async function init(){
  try{await openDB();worksCache=await dbAll();await migrateLS();}catch(e){console.error(e);worksCache=[];}
  $('src-select').value=settings.srcMode||'auto';
  renderDepthChips();setupStage();setupViewer();setupPaletteStrip();bindAll();
- updateSoundUI();updateBucketUI();refreshResumeBtn();updateStorageUI();refreshQuota();
+ updateSoundUI();updateBucketUI();refreshResumeBtn();updateStorageUI();refreshQuota();updateOnlineUI();renderSearchResults();
 }
 init();
 })();
