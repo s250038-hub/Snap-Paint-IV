@@ -2,13 +2,13 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>一拍即玩 SnapPaint｜搜尋精確 RGB</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>一拍即玩 SnapPaint｜提示搜尋・長按拖軌・短點單填</title>
 <style>
 :root{
   --bg:#0E131B;--panel:#161D27;--panel2:#1C2532;--line:rgba(255,255,255,.08);
   --text:#E9EEF5;--muted:#8B98AA;--accent:#5EA0F2;--accent-deep:#3E7FD6;
-  --good:#35D07F;--warn:#FFC53D;--bad:#FF6B5E;--search:#B07CF7;--exact:#35D07F;
+  --good:#35D07F;--warn:#FFC53D;--bad:#FF6B5E;--search:#B07CF7;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Courier New",monospace;
   --disp:"Avenir Next","Futura","Trebuchet MS",-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
   --tool-color:#5EA0F2;--sb-track:rgba(255,255,255,.05);--sb-thumb:#31405A;--sb-hover:#46587A;
@@ -85,7 +85,6 @@ h2.screen-title{font-family:var(--disp);font-size:1.5rem;margin-bottom:16px}
 .online-body{flex:1;min-height:0;overflow-y:auto;display:flex}
 .mode-toggle{display:flex;gap:8px;margin-bottom:14px}
 .mode-toggle .chip.on{background:var(--search);border-color:var(--search);box-shadow:0 4px 12px rgba(176,124,247,.4)}
-.exact-pill{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;font-weight:800;color:var(--exact);background:rgba(53,208,127,.12);border:1px solid rgba(53,208,127,.35);border-radius:999px;padding:6px 12px;margin-bottom:12px;letter-spacing:.5px}
 .level-nav{display:flex;align-items:center;gap:14px;margin-bottom:14px;width:100%;justify-content:center}
 .level-nav .icon-btn{font-size:1.3rem;padding:8px 16px}
 .level-title{display:flex;flex-direction:column;align-items:center;min-width:150px}
@@ -148,12 +147,9 @@ body.painting #tool-cursor{display:none!important}
 #paint-ring::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:var(--tool-color)}
 @keyframes ringPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
 #bottom-panel{background:var(--panel);border-top:1px solid var(--line);padding:6px 10px calc(10px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px;z-index:10;flex-shrink:0}
-.strip-info{display:flex;align-items:center;gap:8px;font-size:.72rem;color:var(--muted);padding:0 2px;flex-wrap:wrap;row-gap:4px}
+.strip-info{display:flex;align-items:center;gap:8px;font-size:.72rem;color:var(--muted);padding:0 2px}
 .strip-info .si-left{font-weight:700;letter-spacing:.5px}
 .strip-info .si-right{margin-left:auto;font-family:var(--mono)}
-.si-rgb{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:3px 8px;cursor:default}
-.si-rgb i{width:13px;height:13px;border-radius:3px;display:inline-block;border:1px solid rgba(255,255,255,.25);flex-shrink:0}
-.si-rgb.exact{border-color:rgba(53,208,127,.4);color:var(--exact)}
 #btn-locate,#btn-fit{padding:4px 10px;font-size:.72rem;border-radius:8px}
 #palette-viewport{overflow:hidden;position:relative;height:78px;touch-action:none;cursor:grab;outline:none}
 #palette-viewport.dragging{cursor:grabbing}
@@ -256,7 +252,6 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
 .switch input:checked+.sl::before{transform:translateX(22px);background:#fff}
 .guide{width:100%;max-width:440px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;text-align:left;color:var(--muted);font-size:.78rem;line-height:1.9;margin-bottom:10px}
 .guide b{color:var(--text)}
-.guide .exact-line{color:var(--exact);font-weight:700}
 #toast{position:fixed;bottom:21%;left:50%;transform:translateX(-50%) translateY(8px);background:rgba(12,16,24,.94);border:1px solid var(--line);color:#fff;padding:10px 20px;border-radius:999px;font-size:.9rem;z-index:300;display:none;pointer-events:none;box-shadow:0 8px 22px rgba(0,0,0,.5);white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
 #toast.show{display:flex;align-items:center;gap:12px;animation:toastIn .25s ease forwards}
 #toast.has-action{pointer-events:auto}
@@ -274,7 +269,7 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
   <div class="col">
     <div class="logo-strip"><i></i><i></i><i></i><i></i><i></i></div>
     <h1>一拍即玩<small>SNAPPAINT</small></h1>
-    <p class="tag">📸 照片切成編號方格，選色填滿重現原作。<br>🔍 提示搜尋＝精確 RGB，色盤與原圖一致。<br>👆 短點單填・⏱️ 長按拖軌・💾 IndexedDB。</p>
+    <p class="tag">📸 照片切成編號方格，選色填滿重現原作。<br>🔍 用提示搜尋圖片・👆 短點單填・⏱️ 長按拖軌。<br>🌐 無限關卡・💾 IndexedDB 大容量。</p>
     <div class="storage-bar">
       <div class="storage-label"><span>📦 作品儲存</span><b id="menu-storage-text">計算中…</b></div>
       <div class="storage-track"><div class="storage-fill" id="menu-storage-fill" style="width:0%"></div></div>
@@ -285,7 +280,7 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
     <button class="btn btn-good" id="resume-btn" style="display:none"></button>
     <button class="btn btn-ghost" id="btn-gallery">🏆 我的作品</button>
     <button class="btn btn-ghost" id="btn-settings">⚙️ 設定</button>
-    <p class="menu-foot">v3.4・搜尋精確 RGB・實際 RGB 數值顯示・填錯不計進度</p>
+    <p class="menu-foot">v3.3・提示搜尋圖片・填錯保留數字不計進度・油漆桶只對正確編號</p>
   </div>
   <input type="file" id="file-input" accept="image/*" style="display:none">
 </div>
@@ -344,7 +339,6 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
       </div>
 
       <div id="search-mode" style="display:none">
-        <div class="exact-pill">🎯 精確 RGB・搜尋結果不做色彩量化</div>
         <div class="search-row">
           <input id="search-input" type="text" maxlength="60" placeholder="輸入提示：貓、sunset、城市、花…" autocomplete="off">
           <button class="icon-btn" id="search-go" aria-label="搜尋">🔍</button>
@@ -422,7 +416,6 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
   <div id="bottom-panel">
     <div class="strip-info">
       <span class="si-left" id="strip-depth"></span>
-      <span class="si-rgb" id="sel-rgb" title="目前選擇顏色的實際 RGB"></span>
       <span class="si-right" id="strip-remaining"></span>
       <button class="icon-btn" id="btn-fit" title="全覽／回正">⛶</button>
       <button class="icon-btn" id="btn-locate">🔍 找格</button>
@@ -474,11 +467,7 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
       <div class="txt"><b>🎨 允許填錯顏色</b><small>關閉時點錯編號沒有任何反應（預設關閉）。<br>開啟後填錯色會保留正確數字在上、不計進度；<br>油漆桶不會在錯編號上啟動。</small></div>
       <label class="switch"><input type="checkbox" id="set-wrong"><span class="sl"></span></label>
     </div>
-    <div class="set-row">
-      <div class="txt"><b>🎯 搜尋精確 RGB</b><small>圖片搜尋模式固定使用原圖實際 RGB（無量化）。<br>色盤、填色、下載皆與原圖 RGB 完全一致。</small></div>
-      <span class="exact-pill" style="margin:0">已啟用</span>
-    </div>
-    <div class="setup-label">🎚️ 色深難度（照片／關卡模式，下一場生效）</div>
+    <div class="setup-label">🎚️ 色深難度（下一場生效）</div>
     <div class="depth-chips"></div>
     <div class="guide">
       <b>👆 短點</b>＝單格填色<br>
@@ -486,7 +475,6 @@ body.bucket-on #tool-btn .pr-head{fill:#fff}
       <b>⏱️ 長按（出現圓圈）</b>＝拖軌連續填色<br>
       <b>🤏 雙指</b>＝縮放／移動・<b>⛶</b>＝全覽回正<br>
       <b>🪣 油漆桶</b>＝只對正確編號整片填滿<br>
-      <span class="exact-line">🎯 搜尋模式＝精確 RGB，色盤下方顯示實際數值。</span><br>
       點錯編號不會閃燈；填錯色會顯示正確數字且不計進度（需開啟）。
     </div>
     <button class="btn" id="btn-settings-close">✔ 完成</button>
@@ -553,8 +541,6 @@ const HARD_CELLS=16000000,SOFT_CELLS=1000000,AUTO_CELLS=150000;
 const PCTS=[100,50,25,12.5,6.25,3.125],ITEM_W=64;
 const LONG_MS=320,MOVE_PX=8;
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const EXACT_DEPTH=256;
-const EXACT_TIER={icon:'🎯',name:'精確 RGB',en:'EXACT RGB',c:'#35D07F'};
 const DEPTHS=[
  {L:4,name:'簡單',en:'EASY',icon:'🙂',c:'#3ECF8E'},
  {L:8,name:'普通',en:'MID',icon:'😌',c:'#5EA0F2'},
@@ -572,7 +558,6 @@ const tick=()=>new Promise(r=>setTimeout(r,0));
 const loadImg=src=>new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('img'));i.src=src;});
 const hexA=(h,a)=>{const n=parseInt(h.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`;};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const rgbHex=(r,g,b)=>'#'+[r,g,b].map(v=>clamp(v|0,0,255).toString(16).padStart(2,'0')).join('').toUpperCase();
 function formatBytes(b){b=Number(b)||0;if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';if(b<1073741824)return(b/1048576).toFixed(2)+' MB';if(b<1099511627776)return(b/1073741824).toFixed(2)+' GB';return(b/1099511627776).toFixed(2)+' TB';}
 function dataURLtoBlob(u){const i=u.indexOf(',');const meta=u.slice(0,i),b64=u.slice(i+1);const mime=(meta.match(/data:([^;]+)/)||[])[1]||'image/png';const bin=atob(b64);const a=new Uint8Array(bin.length);for(let k=0;k<bin.length;k++)a[k]=bin.charCodeAt(k);return new Blob([a],{type:mime});}
 function canvasBlob(c,type,q){return new Promise(res=>{try{c.toBlob(b=>res(b||dataURLtoBlob(c.toDataURL(type,q))),type,q);}catch(e){res(dataURLtoBlob(c.toDataURL(type,q)));}});}
@@ -666,22 +651,19 @@ function fwAdd(pi,d){for(let i=pi+1;i<=P.pal.count;i+=i&-i)P.fw[i]+=d;}
 function fwPrefix(k){let s=0;for(let i=k;i>0;i-=i&-i)s+=P.fw[i];return s;}
 function fwSelect(k){let idx=0;for(let pw=P.fwHB;pw;pw>>=1){const nx=idx+pw;if(nx<=P.pal.count&&P.fw[nx]<k){idx=nx;k-=P.fw[nx];}}return idx;}
 function palRGB(pi){const k=P.pal.keys[pi],L=P.depth,CH=P.pal.CH;return[CH[(k/(L*L))|0],CH[((k/L)|0)%L],CH[k%L]];}
-function palHex(pi){const[r,g,b]=palRGB(pi);return rgbHex(r,g,b);}
-function tierOf(p){return p&&p.exact?EXACT_TIER:depthInfo(p?p.depth:depth);}
 const stripPool=new Map();let stripRAF=false;
 function scheduleStrip(){if(stripRAF)return;stripRAF=true;requestAnimationFrame(()=>{stripRAF=false;renderStrip();});}
 function maxStripOff(){if(!P)return 0;const vw=$('palette-viewport').clientWidth;return Math.max(0,P.activeCount-vw/ITEM_W);}
-function makeStripItem(pi){const el=document.createElement('div');el.className='pal-item';const[r,g,b]=palRGB(pi),dark=P.pal.gray[pi]>150,num=String(pi+1),len=num.length;const fs=len<=2?'1rem':len===3?'.8rem':len===4?'.66rem':'.55rem';el.title=`編號 ${num}・RGB(${r}, ${g}, ${b})・${rgbHex(r,g,b)}`;el.innerHTML=`<div class="pal-dot" style="background:rgb(${r},${g},${b})"><span class="pal-num" style="color:${dark?'#111418':'#fff'};font-size:${fs};text-shadow:0 0 3px ${dark?'rgba(255,255,255,.7)':'rgba(0,0,0,.7)'}">${num}</span></div><div class="pal-bar"><i style="background:rgb(${r},${g},${b})"></i></div>`;el._bar=el.querySelector('.pal-bar i');return el;}
+function makeStripItem(pi){const el=document.createElement('div');el.className='pal-item';const[r,g,b]=palRGB(pi),dark=P.pal.gray[pi]>150,num=String(pi+1),len=num.length;const fs=len<=2?'1rem':len===3?'.8rem':len===4?'.66rem':'.55rem';el.innerHTML=`<div class="pal-dot" style="background:rgb(${r},${g},${b})"><span class="pal-num" style="color:${dark?'#111418':'#fff'};font-size:${fs};text-shadow:0 0 3px ${dark?'rgba(255,255,255,.7)':'rgba(0,0,0,.7)'}">${num}</span></div><div class="pal-bar"><i style="background:rgb(${r},${g},${b})"></i></div>`;el._bar=el.querySelector('.pal-bar i');return el;}
 function refreshStripItem(pi,el){const e=P.pal,pct=e.total[pi]?((e.total[pi]-e.remaining[pi])/e.total[pi]*100):100;el._bar.style.width=pct+'%';el.classList.toggle('selected',P.selected===pi);}
 function renderStrip(){const vp=$('palette-viewport'),inner=$('palette-inner'),track=$('palette-track'),thumb=$('palette-thumb');if(!P){inner.style.width='0px';stripPool.forEach(el=>el.remove());stripPool.clear();track.classList.add('idle');thumb.style.width='100%';thumb.style.left='0px';return;}const vw=vp.clientWidth;stripOffset=clamp(stripOffset,0,maxStripOff());inner.style.width=vw+'px';const need=new Set();if(P.activeCount>0){const r0=Math.max(0,Math.floor(stripOffset)-1);const r1=Math.min(P.activeCount-1,Math.ceil(stripOffset+vw/ITEM_W)+1);for(let r=r0;r<=r1;r++){const pi=fwSelect(r+1);need.add(pi);let el=stripPool.get(pi);if(!el){el=makeStripItem(pi);stripPool.set(pi,el);inner.appendChild(el);}el.style.transform=`translateX(${(r-stripOffset)*ITEM_W}px)`;refreshStripItem(pi,el);}}for(const[pi,el]of stripPool){if(!need.has(pi)){el.remove();stripPool.delete(pi);}}const tw=track.clientWidth,ratio=Math.min(1,(vw/ITEM_W)/Math.max(1,P.activeCount)),thW=Math.max(28,tw*ratio),mo=maxStripOff();thumb.style.width=thW+'px';thumb.style.left=(mo>0?(tw-thW)*(stripOffset/mo):0)+'px';track.classList.toggle('idle',mo<=0);}
 function scrollToPalette(pi){const rank=fwPrefix(pi+1)-1,vw=$('palette-viewport').clientWidth;const target=clamp(rank-vw/ITEM_W/2+.5,0,maxStripOff());stripAnim={from:stripOffset,to:target,t0:performance.now(),dur:240};}
 function setToolColor(){const e=(P&&P.selected>=0)?palRGB(P.selected):null;document.body.style.setProperty('--tool-color',e?`rgb(${e[0]},${e[1]},${e[2]})`:'#5EA0F2');}
-function updateColorReadout(){const el=$('sel-rgb');if(!el)return;if(!P||P.selected<0){el.innerHTML='';el.title='';el.classList.remove('exact');return;}const[r,g,b]=palRGB(P.selected);el.classList.toggle('exact',!!P.exact);el.innerHTML=`<i style="background:rgb(${r},${g},${b})"></i><span>${r},${g},${b}</span>`;el.title=`實際 RGB(${r}, ${g}, ${b})・${rgbHex(r,g,b)}${P.exact?'・精確無量化':''}`;}
-function select(pi,scroll){if(!P||pi<0||pi>=P.pal.count)return;const old=P.selected;P.selected=pi;const inp=$('num-input');inp.value=String(pi+1);inp.style.fontSize=inp.value.length>4?'.85rem':'1.15rem';inp.style.letterSpacing=inp.value.length>4?'1px':'2px';const oe=stripPool.get(old),ne=stripPool.get(pi);if(oe)refreshStripItem(old,oe);if(ne)refreshStripItem(pi,ne);if(scroll)scrollToPalette(pi);setToolColor();updateColorReadout();}
+function select(pi,scroll){if(!P||pi<0||pi>=P.pal.count)return;const old=P.selected;P.selected=pi;const inp=$('num-input');inp.value=String(pi+1);inp.style.fontSize=inp.value.length>4?'.85rem':'1.15rem';inp.style.letterSpacing=inp.value.length>4?'1px':'2px';const oe=stripPool.get(old),ne=stripPool.get(pi);if(oe)refreshStripItem(old,oe);if(ne)refreshStripItem(pi,ne);if(scroll)scrollToPalette(pi);setToolColor();}
 function selectFirstAvailable(){if(P&&P.activeCount>0)select(fwSelect(1),true);}
 function selectNumFromInput(){if(!P)return;const v=parseInt($('num-input').value,10);if(!Number.isFinite(v)||v<1||v>P.pal.count){showToast('編號不存在！');return;}const pi=v-1;if(P.pal.remaining[pi]<=0){showToast(`編號 ${v} 已填完 ✓`);return;}select(pi,true);sndUI();}
 function colorFinished(pi){fwAdd(pi,-1);P.activeCount--;const before=fwPrefix(pi+1);if(before<stripOffset)stripOffset-=1;const el=stripPool.get(pi);if(el){el.remove();stripPool.delete(pi);}sndColor();if(P.selected===pi&&P.activeCount>0){let r=before+1;if(r>P.activeCount)r=1;const nj=fwSelect(r);select(nj,true);showToast(`✅ 完成一色！已切換至編號 ${nj+1}`);}scheduleStrip();updateStripInfo();}
-function updateStripInfo(){if(!P)return;const d=tierOf(P);$('strip-depth').textContent=`${d.icon} ${d.name}・${fmt(P.pal.count)} 色`;$('strip-remaining').textContent=`未完成 ${fmt(P.activeCount)} 色`;updateColorReadout();}
+function updateStripInfo(){if(!P)return;const d=depthInfo(P.depth);$('strip-depth').textContent=`${d.icon} ${d.name}・${fmt(P.pal.count)} 色`;$('strip-remaining').textContent=`未完成 ${fmt(P.activeCount)} 色`;}
 function setupPaletteStrip(){const vp=$('palette-viewport'),track=$('palette-track');let drag=null;
  vp.addEventListener('pointerdown',e=>{if(!P||(e.pointerType==='mouse'&&e.button!==0))return;try{vp.setPointerCapture(e.pointerId);}catch(err){}drag={x:e.clientX,off:stripOffset,moved:false};stripAnim=null;});
  vp.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x;if(Math.abs(dx)>6){drag.moved=true;vp.classList.add('dragging');}if(drag.moved){stripOffset=drag.off-dx/ITEM_W;scheduleStrip();}});
@@ -723,11 +705,11 @@ async function assemblePuzzle(cols,rows,L,a,filled,elapsedMs,onProg,wrongEntries
  }
  const workCanvas=document.createElement('canvas');workCanvas.width=cols;workCanvas.height=rows;
  const workCtx=workCanvas.getContext('2d');workCtx.putImageData(workImg,0,0);
- P={cols,rows,total:n,depth:L,indexMap:idx,filled:filled||new Uint8Array(n),pal:{count,keys:a.keys,total:a.totals,remaining,gray,CH},workImg,workCanvas,workCtx,selected:-1,filledCount,isCompleted:false,elapsedMs:elapsedMs||0,runTs:0,wrong,wrongVersion:0,exact:false};
+ P={cols,rows,total:n,depth:L,indexMap:idx,filled:filled||new Uint8Array(n),pal:{count,keys:a.keys,total:a.totals,remaining,gray,CH},workImg,workCanvas,workCtx,selected:-1,filledCount,isCompleted:false,elapsedMs:elapsedMs||0,runTs:0,wrong,wrongVersion:0};
  fwBuild();
 }
 function gridCanvas(img,cols,rows){const off=document.createElement('canvas');off.width=cols;off.height=rows;const oc=off.getContext('2d',{willReadFrequently:true});oc.fillStyle='#fff';oc.fillRect(0,0,cols,rows);oc.imageSmoothingEnabled=true;oc.imageSmoothingQuality='high';oc.drawImage(img,0,0,cols,rows);return oc.getImageData(0,0,cols,rows).data;}
-async function buildNewPuzzle(img,cols,rows,L,meta){setLoad('正在把照片切成方格…',.02);await tick();const px=gridCanvas(img,cols,rows),n=cols*rows;const a=await analyzePixels(px,n,L,p=>setLoad(`分析色彩（${meta.exact?'精確 RGB':depthInfo(L).name}）…`,.05+p*.6));setLoad('排序色盤…',.7);await tick();sortPalette(a);setLoad('準備畫布…',.75);await tick();await assemblePuzzle(cols,rows,L,a,null,0,p=>setLoad('準備畫布…',.75+p*.15));P.exact=!!meta.exact;setLoad('封裝存檔…',.92);await tick();const blob=await makeTargetBlob();currentWork={id:Date.now(),date:new Date().toLocaleDateString('zh-TW'),mode:meta.mode,level:meta.level||0,query:meta.query||'',index:meta.index||0,depth:L,exact:!!meta.exact,cols,rows,puzzleBlob:blob};setLoad('完成！',1);}
+async function buildNewPuzzle(img,cols,rows,L,meta){setLoad('正在把照片切成方格…',.02);await tick();const px=gridCanvas(img,cols,rows),n=cols*rows;const a=await analyzePixels(px,n,L,p=>setLoad(`分析色彩（${depthInfo(L).name}）…`,.05+p*.6));setLoad('排序色盤…',.7);await tick();sortPalette(a);setLoad('準備畫布…',.75);await tick();await assemblePuzzle(cols,rows,L,a,null,0,p=>setLoad('準備畫布…',.75+p*.15));setLoad('封裝存檔…',.92);await tick();const blob=await makeTargetBlob();currentWork={id:Date.now(),date:new Date().toLocaleDateString('zh-TW'),mode:meta.mode,level:meta.level||0,query:meta.query||'',index:meta.index||0,depth:L,cols,rows,puzzleBlob:blob};setLoad('完成！',1);}
 function encodeRLE(arr){const parts=[];let i=0;const len=arr.length;while(i<len){const v=arr[i];let c=1;while(i+c<len&&arr[i+c]===v&&c<255)c++;parts.push(String.fromCharCode(v,c));i+=c;}return btoa(parts.join(''));}
 function decodeRLE(str,total){const bin=atob(str),arr=new Uint8Array(total);let i=0,out=0;while(i+1<bin.length){const v=bin.charCodeAt(i),c=bin.charCodeAt(i+1);i+=2;for(let k=0;k<c&&out<total;k++)arr[out++]=v;}return arr;}
 
@@ -745,7 +727,7 @@ async function persistWork(){
  try{
   syncWorkCanvas();
   const preview=await makePreviewBlob(P.isCompleted?1280:220,P.isCompleted?.82:.6);
-  const entry={id:currentWork.id,date:currentWork.date,mode:currentWork.mode,level:currentWork.level,query:currentWork.query||'',index:currentWork.index||0,depth:P.depth,exact:!!P.exact,cols:P.cols,rows:P.rows,colors:P.pal.count,elapsed:Math.floor(curElapsedMs()/1000),time:fmtTime(curElapsedMs()),completed:!!P.isCompleted,puzzleBlob:currentWork.puzzleBlob,previewBlob:preview};
+  const entry={id:currentWork.id,date:currentWork.date,mode:currentWork.mode,level:currentWork.level,query:currentWork.query||'',index:currentWork.index||0,depth:P.depth,cols:P.cols,rows:P.rows,colors:P.pal.count,elapsed:Math.floor(curElapsedMs()/1000),time:fmtTime(curElapsedMs()),completed:!!P.isCompleted,puzzleBlob:currentWork.puzzleBlob,previewBlob:preview};
   if(!P.isCompleted){entry.filled=encodeRLE(P.filled);entry.filledCount=P.filledCount;entry.total=P.total;if(P.wrong.size)entry.wrong=Array.from(P.wrong.entries());}
   if(Array.isArray(currentWork.pal))entry.pal=currentWork.pal;
   entry.bytes=entryBytes(entry);
@@ -848,12 +830,12 @@ function fmtTime(ms){const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.flo
 function startTimer(){if(timerId){clearInterval(timerId);timerId=null;}if(!P||P.isCompleted)return;if(!P.runTs)P.runTs=Date.now();const t=()=>{$('timer').textContent=fmtTime(curElapsedMs());};t();timerId=setInterval(t,500);}
 function stopTimer(){if(timerId){clearInterval(timerId);timerId=null;}if(P&&P.runTs){P.elapsedMs+=Date.now()-P.runTs;P.runTs=0;}}
 function updateProgress(){const pct=P.total?Math.round(P.filledCount/P.total*100):0;const c=$('progress-circle'),C=2*Math.PI*c.r.baseVal.value;c.style.strokeDasharray=`${C} ${C}`;c.style.strokeDashoffset=C-(pct/100)*C;$('progress-text').textContent=pct+'%';}
-function workLabel(w){return w.mode==='online'?`Lv.${w.level}`:w.mode==='search'?'🔍 '+w.query:'照片';}
-function enterGame(msg){revokeAll();showScreen('screen-game');clearGesture();pinch=null;pointers.clear();const d=tierOf(P);$('hud-sub').textContent=`${workLabel(currentWork)}・${d.en}`;$('timer').textContent=fmtTime(curElapsedMs());updateProgress();updateStripInfo();setToolColor();const init=(tries=0)=>{const el=$('canvas-container');if(el.clientWidth>0&&el.clientHeight>0||tries>=120){resizeMainCanvas();resetView();stripOffset=0;stripAnim=null;renderStrip();startTimer();selectFirstAvailable();}else requestAnimationFrame(()=>init(tries+1));};requestAnimationFrame(()=>init());showToast(msg||(P.exact?'🎯 精確 RGB：色盤顯示實際數值':'👆 短點單填・🖐️ 拖曳移動・⏱️ 長按拖軌填色'));}
+function workLabel(w){return w.mode==='online'?`Lv.${w.level}`:w.mode==='search'?`🔍 ${w.query}`:'照片';}
+function enterGame(msg){revokeAll();showScreen('screen-game');clearGesture();pinch=null;pointers.clear();const d=depthInfo(P.depth);$('hud-sub').textContent=`${workLabel(currentWork)}・${d.en}`;$('timer').textContent=fmtTime(curElapsedMs());updateProgress();updateStripInfo();setToolColor();const init=(tries=0)=>{const el=$('canvas-container');if(el.clientWidth>0&&el.clientHeight>0||tries>=120){resizeMainCanvas();resetView();stripOffset=0;stripAnim=null;renderStrip();startTimer();selectFirstAvailable();}else requestAnimationFrame(()=>init(tries+1));};requestAnimationFrame(()=>init());showToast(msg||'👆 短點單填・🖐️ 拖曳移動・⏱️ 長按拖軌填色');}
 function confirmReset(){if(!P)return;const btn=$('reset-btn');if(!resetArmed){resetArmed=true;btn.textContent='⚠️ 再點確認';btn.classList.add('danger-armed');resetArmT=setTimeout(()=>{disarmReset();showToast('已取消重置');},3000);}else{clearTimeout(resetArmT);disarmReset();resetGrid();}}
 function disarmReset(){resetArmed=false;const b=$('reset-btn');b.textContent='↺ 重置';b.classList.remove('danger-armed');}
 function resetGrid(){if(!P)return;const wasCompleted=!!P.isCompleted;stopTimer();P.filled.fill(0);P.filledCount=0;P.isCompleted=false;P.elapsedMs=0;P.runTs=0;P.pal.remaining.set(P.pal.total);P.wrong.clear();P.wrongVersion++;fillGray();P.workCtx.putImageData(P.workImg,0,0);dirtyBox=null;fwBuild();stripPool.forEach(el=>el.remove());stripPool.clear();stripOffset=0;stripAnim=null;flashes.length=0;if(wasCompleted&&currentWork)currentWork=Object.assign({},currentWork,{id:Date.now(),date:new Date().toLocaleDateString('zh-TW')});saveWarned=false;renderStrip();updateStripInfo();updateProgress();selectFirstAvailable();dirty=true;startTimer();persistNow();showToast('↺ 已重置畫布');}
-function win(){stopTimer();P.isCompleted=true;persistNow();if(currentWork.mode==='online'){onlineDone.add(currentWork.level);onlineBest=Math.max(onlineBest,currentWork.level);saveSettings();}setTimeout(()=>{const d=tierOf(P);const e=worksCache.find(w=>w.id===currentWork.id);$('complete-preview').src=(e&&urlFor(e,'preview'))||makePreviewURLSync(900,.85);$('complete-stats').innerHTML=`<span class="stat-chip">🧱 <b>${fmt(P.total)}</b> 格</span><span class="stat-chip">🎨 <b>${fmt(P.pal.count)}</b> 色</span><span class="stat-chip">⏱ <b>${fmtTime(curElapsedMs())}</b></span><span class="stat-chip" style="border-color:${d.c};color:${d.c}">${d.icon} ${d.name}</span>`+(currentWork.mode!=='photo'?`<span class="stat-chip">${esc(workLabel(currentWork))}</span>`:'');const note=$('complete-save-note');note.textContent=lastSaveOk?'💾 已自動儲存到「我的作品」':'⚠️ 進度保存失敗（儲存空間不足）';note.classList.toggle('bad',!lastSaveOk);const nb=$('btn-next-level');if(currentWork.mode==='online'){nb.style.display='';nb.textContent=`▶ 下一關 Lv.${currentWork.level+1}`;}else if(currentWork.mode==='search'){nb.style.display='';nb.textContent=`▶ 下一張「${currentWork.query}」`;}else nb.style.display='none';showOverlay('overlay-complete');startConfetti();sndWin();updateStorageUI();},450);}
+function win(){stopTimer();P.isCompleted=true;persistNow();if(currentWork.mode==='online'){onlineDone.add(currentWork.level);onlineBest=Math.max(onlineBest,currentWork.level);saveSettings();}setTimeout(()=>{const d=depthInfo(P.depth);const e=worksCache.find(w=>w.id===currentWork.id);$('complete-preview').src=(e&&urlFor(e,'preview'))||makePreviewURLSync(900,.85);$('complete-stats').innerHTML=`<span class="stat-chip">🧱 <b>${fmt(P.total)}</b> 格</span><span class="stat-chip">🎨 <b>${fmt(P.pal.count)}</b> 色</span><span class="stat-chip">⏱ <b>${fmtTime(curElapsedMs())}</b></span><span class="stat-chip" style="border-color:${d.c};color:${d.c}">${d.icon} ${d.name}</span>`+(currentWork.mode!=='photo'?`<span class="stat-chip">${esc(workLabel(currentWork))}</span>`:'');const note=$('complete-save-note');note.textContent=lastSaveOk?'💾 已自動儲存到「我的作品」':'⚠️ 進度保存失敗（儲存空間不足）';note.classList.toggle('bad',!lastSaveOk);const nb=$('btn-next-level');if(currentWork.mode==='online'){nb.style.display='';nb.textContent=`▶ 下一關 Lv.${currentWork.level+1}`;}else if(currentWork.mode==='search'){nb.style.display='';nb.textContent=`▶ 下一張「${currentWork.query}」`;}else nb.style.display='none';showOverlay('overlay-complete');startConfetti();sndWin();updateStorageUI();},450);}
 function makePreviewURLSync(maxDim,q){const mx=Math.max(P.cols,P.rows);let f=Math.min(maxDim/mx,64);if(f>=1)f=Math.max(1,Math.floor(f));const out=document.createElement('canvas');out.width=Math.max(1,Math.round(P.cols*f));out.height=Math.max(1,Math.round(P.rows*f));const c=out.getContext('2d');c.imageSmoothingEnabled=f<1;c.drawImage(P.workCanvas,0,0,out.width,out.height);return out.toDataURL('image/jpeg',q);}
 function replay(){hideOverlay('overlay-complete');stopConfetti();resetGrid();}
 function goHome(){hideOverlay('overlay-complete');stopConfetti();stopTimer();persistNow();disarmReset();showScreen('screen-menu');}
@@ -868,7 +850,7 @@ function updateResStats(){if(!srcImg)return;const{w,h}=srcDims(),{cols,rows,n}=r
 function enterResScreen(){$('res-preview').src=srcImg.src;const{w,h}=srcDims();let pick=PCTS[PCTS.length-1];for(const p of PCTS){const f=p/100;if(Math.max(2,Math.round(w*f))*Math.max(2,Math.round(h*f))<=AUTO_CELLS){pick=p;break;}}chosenPct=pick;document.querySelectorAll('#pct-chips .chip').forEach(c=>c.classList.toggle('on',+c.dataset.pct===pick));updateResStats();updateStorageUI();showScreen('screen-res');}
 async function startGame(){if(!srcImg){showToast('請先選擇一張照片！');return;}if(!checkStorageAvailable())return;const{cols,rows,n}=resCells();if(n>HARD_CELLS){showToast('⛔ 網格過大，請降低解析度');return;}if(P)persistNow();setLoad('正在把照片切成方格…',0);showOverlay('overlay-loading');try{await buildNewPuzzle(srcImg,cols,rows,depth,{mode:'photo'});hideOverlay('overlay-loading');enterGame();}catch(err){console.error(err);hideOverlay('overlay-loading');showToast('⚠️ 生成失敗：記憶體不足，請降低解析度或色深');}}
 
-/* §16 online levels + prompt search (search = exact RGB) */
+/* §16 online levels + prompt search */
 const UNSPLASH=['photo-1506744038136-46273834b3fb','photo-1469474968028-56623f02e42e','photo-1447752875215-b2761acb3c5d','photo-1433086966358-54859d0ed716','photo-1501785888041-af3ef285b470','photo-1470071459604-3b5ec3a7fe05','photo-1441974231531-c6227db76b6e','photo-1502082553048-f009c37129b9','photo-1472214103451-9374bd1c798e','photo-1509316975850-ff9c5deb0cd9','photo-1513836279014-a89f7a76ae86','photo-1518495973542-4542c06a5843','photo-1465146344425-f00d5f5c8f07','photo-1482938289607-e9573fc25ebb','photo-1507525428034-b723cf961d3e','photo-1519046904884-53103b34b206','photo-1500534314209-a25ddb2bd429','photo-1493246507139-91e8fad9978e','photo-1476514525535-07fb3b4ae5f1','photo-1506905925346-21bda4d32df4','photo-1464822759023-fed622ff2c3b','photo-1454496522488-7a8e488e8606','photo-1519681393784-d120267933ba','photo-1497436072909-60f360e1d4b1'];
 let onlineCache={level:0,img:null,url:null,source:''},fetchSeq=0,attemptCtl=null,netCooldownUntil=0,onlineDebounce=0,fallbackToastShown=0;
 let searchResults=[],searchIndex=0,searchCache={img:null,url:null,source:'',query:'',index:-1},searchSeq=0,searchBusy=false;
@@ -901,7 +883,7 @@ function updateOnlineUI(){
  $('mode-level').classList.toggle('on',!isSearch);$('mode-search').classList.toggle('on',isSearch);
  $('level-mode').style.display=isSearch?'none':'';$('search-mode').style.display=isSearch?'':'none';
  $('src-label').style.display=isSearch?'none':'';$('src-select').style.display=isSearch?'none':'';
- $('online-title').textContent=isSearch?'🔍 提示搜尋（精確 RGB）':'🌐 線上關卡 ∞';
+ $('online-title').textContent=isSearch?'🔍 提示搜尋圖片':'🌐 線上關卡 ∞';
  const d=depthInfo(depth);
  if(isSearch){
   if(document.activeElement!==$('search-input'))$('search-input').value=searchQuery;
@@ -910,9 +892,9 @@ function updateOnlineUI(){
   const ready=searchCache.img&&searchCache.query===searchQuery&&searchCache.index===searchIndex;
   if(ready){const{cols,rows}=searchDims(searchCache.img);$('online-stats').textContent=`${cols} × ${rows} ＝ ${fmt(cols*rows)} 格`;$('online-preview-box').style.aspectRatio=`${cols}/${rows}`;setPreview(searchCache.url);$('btn-start-online').disabled=false;$('btn-start-online').textContent=`🎨 開始「${searchQuery}」`;}
   else{$('online-stats').textContent='— × —';$('online-preview-box').style.aspectRatio='4/3';if(!searchBusy)setPreview(null);$('btn-start-online').disabled=true;$('btn-start-online').textContent=searchResults.length?'⏳ 載入圖片…':'🔍 先搜尋圖片';}
-  $('online-colors').textContent='🎯 精確 RGB・256³・每個獨特顏色一個編號（色盤＝原圖數值）';
+  $('online-colors').textContent=`難度 ${d.icon} ${d.name}・上限 ${fmt(d.L**3)} 色（⚙️ 設定可改）`;
   const badge=$('src-badge');badge.textContent=ready?srcName(searchCache.source):(searchResults.length?srcName(searchResults[0].source):'—');badge.classList.toggle('off',ready&&searchCache.source==='offline');
-  $('online-hint').innerHTML='🎯 搜尋結果以原圖實際 RGB 建立色盤，不經難度量化。<br>來源：Wikimedia Commons；失敗時改用離線主題圖。';
+  $('online-hint').innerHTML='🔍 用提示搜尋真實圖片（來源：Wikimedia Commons）。<br>無法連線或找不到結果時，自動改用離線主題圖。';
  }else{
   const{cols,rows}=levelDims(onlineLevel);
   $('online-level-num').textContent=`Lv.${onlineLevel}`;$('online-ph-text').textContent=`Lv.${onlineLevel}`;
@@ -931,7 +913,7 @@ function updateOnlineUI(){
 async function refreshOnlinePreview(force){if(onlineMode!=='level')return;const l=onlineLevel;updateOnlineUI();if(onlineCache.level===l&&onlineCache.img&&!force){setOnlineReadyLevel();return;}setOnlineLoading();try{await fetchLevel(l,t=>setLoad(t,.3));if(onlineLevel===l&&onlineMode==='level')setOnlineReadyLevel();}catch(e){if(e&&e.name==='AbortError')return;if(onlineLevel===l&&onlineMode==='level')setOnlineError();}}
 function setOnlineLevel(l){onlineLevel=Math.max(1,Math.min(999999,l|0||1));saveSettings();$('online-jump').value='';updateOnlineUI();clearTimeout(onlineDebounce);onlineDebounce=setTimeout(()=>refreshOnlinePreview(),260);}
 async function playOnline(l){l=Math.max(1,l|0);if(!checkStorageAvailable())return;if(P)persistNow();onlineLevel=l;onlineMode='level';saveSettings();setLoad(`下載 Lv.${l} 關卡圖片…`,.02);showOverlay('overlay-loading');try{const img=await fetchLevel(l,t=>setLoad(t,.1));const{cols,rows}=levelDims(l);await buildNewPuzzle(img,cols,rows,depth,{mode:'online',level:l});hideOverlay('overlay-loading');enterGame(`🌐 Lv.${l} 開始！`);}catch(err){console.error(err);hideOverlay('overlay-loading');showToast('⚠️ 關卡載入失敗');showScreen('screen-online');setOnlineError();}}
-/* ---- prompt search: always exact RGB ---- */
+/* ---- prompt search ---- */
 function searchDims(img){const long=searchSize,w=img.naturalWidth,h=img.naturalHeight;let cols,rows;if(w>=h){cols=long;rows=Math.max(12,Math.round(long*h/w));}else{rows=long;cols=Math.max(12,Math.round(long*w/h));}return{cols,rows};}
 function revokeSearchCache(){if(searchCache.url&&searchCache.url.startsWith('blob:'))URL.revokeObjectURL(searchCache.url);searchCache={img:null,url:null,source:'',query:'',index:-1};}
 async function searchCommons(q,signal){
@@ -977,8 +959,8 @@ async function playSearchSelected(){if(!searchCache.img||searchCache.query!==sea
 async function playSearchImage(q,i,img){
  if(!checkStorageAvailable())return;if(P)persistNow();
  setLoad(`準備「${q}」…`,.05);showOverlay('overlay-loading');
- try{const{cols,rows}=searchDims(img);await buildNewPuzzle(img,cols,rows,EXACT_DEPTH,{mode:'search',query:q,index:i,exact:true});hideOverlay('overlay-loading');enterGame(`🎯「${q}」精確 RGB 開始！`);}
- catch(e){console.error(e);hideOverlay('overlay-loading');showToast('⚠️ 生成失敗，請改用較小網格');}
+ try{const{cols,rows}=searchDims(img);await buildNewPuzzle(img,cols,rows,depth,{mode:'search',query:q,index:i});hideOverlay('overlay-loading');enterGame(`🔍「${q}」開始！`);}
+ catch(e){console.error(e);hideOverlay('overlay-loading');showToast('⚠️ 生成失敗，請改用較小網格或較低難度');}
 }
 async function playSearchResult(q,i){
  if(!checkStorageAvailable())return;
@@ -993,17 +975,17 @@ async function playSearchResult(q,i){
 }
 
 /* §17 resume */
-async function rebuildFromSave(data){const img=await loadImg(urlFor(data,'puzzle'));const cols=data.cols,rows=data.rows,n=cols*rows,L=data.depth||16;const px=gridCanvas(img,cols,rows);let a;if(Array.isArray(data.pal)&&data.pal.length){a=await analyzeLegacy(px,n,L,data.pal,p=>setLoad('恢復色盤（舊版存檔）…',.05+p*.65));}else{a=await analyzePixels(px,n,L,p=>setLoad('恢復色盤…',.05+p*.6));setLoad('排序色盤…',.7);await tick();sortPalette(a);}const filled=data.filled?decodeRLE(data.filled,n):new Uint8Array(n);setLoad('重建畫布…',.75);await tick();await assemblePuzzle(cols,rows,L,a,filled,(data.elapsed||0)*1000,p=>setLoad('重建畫布…',.75+p*.2),data.wrong);P.exact=!!data.exact;currentWork={id:data.id,date:data.date||new Date().toLocaleDateString('zh-TW'),mode:data.mode||'photo',level:data.level||0,query:data.query||'',index:data.index||0,depth:L,exact:!!data.exact,cols,rows,puzzleBlob:data.puzzleBlob,pal:Array.isArray(data.pal)?data.pal:undefined};saveWarned=false;}
+async function rebuildFromSave(data){const img=await loadImg(urlFor(data,'puzzle'));const cols=data.cols,rows=data.rows,n=cols*rows,L=data.depth||16;const px=gridCanvas(img,cols,rows);let a;if(Array.isArray(data.pal)&&data.pal.length){a=await analyzeLegacy(px,n,L,data.pal,p=>setLoad('恢復色盤（舊版存檔）…',.05+p*.65));}else{a=await analyzePixels(px,n,L,p=>setLoad('恢復色盤…',.05+p*.6));setLoad('排序色盤…',.7);await tick();sortPalette(a);}const filled=data.filled?decodeRLE(data.filled,n):new Uint8Array(n);setLoad('重建畫布…',.75);await tick();await assemblePuzzle(cols,rows,L,a,filled,(data.elapsed||0)*1000,p=>setLoad('重建畫布…',.75+p*.2),data.wrong);currentWork={id:data.id,date:data.date||new Date().toLocaleDateString('zh-TW'),mode:data.mode||'photo',level:data.level||0,query:data.query||'',index:data.index||0,depth:L,cols,rows,puzzleBlob:data.puzzleBlob,pal:Array.isArray(data.pal)?data.pal:undefined};saveWarned=false;}
 function resumeWork(id){const data=loadWorks().find(w=>w.id===id&&!w.completed);if(!data){showToast('找不到這筆存檔');refreshResumeBtn();return;}if(!data.puzzleBlob){showToast('存檔損壞，請刪除後重新開始');return;}if(P)persistNow();setLoad('正在恢復進度…',0);showOverlay('overlay-loading');setTimeout(async()=>{try{await rebuildFromSave(data);hideOverlay('overlay-loading');const pct=P.total?Math.round(P.filledCount/P.total*100):0;enterGame(`▶️ 已恢復進度（${pct}%）`);}catch(err){console.error(err);hideOverlay('overlay-loading');showToast('⚠️ 恢復失敗');}},80);}
 function refreshResumeBtn(){const list=loadWorks().filter(w=>!w.completed).sort((a,b)=>b.id-a.id),btn=$('resume-btn');if(list.length){const w=list[0],pct=w.total?Math.round((w.filledCount||0)/w.total*100):0;btn.style.display='';btn.textContent=`▶️ 繼續未完成作品（${pct}%・${workLabel(w)}）`;}else btn.style.display='none';}
 function resumeLatest(){const list=loadWorks().filter(w=>!w.completed).sort((a,b)=>b.id-a.id);if(list.length)resumeWork(list[0].id);else showToast('目前沒有未完成的作品');}
 
 /* §18 gallery / viewer */
 function showGallery(){updateStorageUI();revokeAll();const grid=$('gallery-grid');grid.innerHTML='';const list=loadWorks();if(!list.length){grid.innerHTML='<p class="empty-msg">尚無作品<br>開始挑戰後進度會自動保存在這裡 🎨</p>';return;}const inProg=list.filter(w=>!w.completed).sort((a,b)=>b.id-a.id);const done=list.filter(w=>w.completed).sort((a,b)=>b.id-a.id);inProg.concat(done).forEach(item=>grid.appendChild(makeGalleryCard(item)));}
-function makeGalleryCard(item){const div=document.createElement('div');div.className='gallery-item';const W=item.cols||'?',H=item.rows||'?',d=item.exact?EXACT_TIER:depthInfo(item.depth||16);const img=urlFor(item,'preview');const modeBadge=item.mode==='online'?`<span class="gi-badge lv">Lv.${item.level}</span>`:item.mode==='search'?`<span class="gi-badge sq">🔍 ${esc(item.query||'搜尋')}</span>`:`<span class="gi-badge ph">📷</span>`;const meta=`<div class="gallery-meta"><b>${item.date||''}</b><span>${W}×${H}</span><small style="color:${d.c}">${d.icon} ${d.name}・${fmt(item.colors||0)} 色${item.time?'・⏱'+item.time:''}</small></div>`;if(item.completed){div.innerHTML=`<img src="${img}" alt="作品" loading="lazy"><div class="gi-badges"><span class="gi-badge done">✅ 完成</span>${modeBadge}</div><button class="gallery-delete" aria-label="刪除">✕</button>${meta}`;div.addEventListener('click',e=>{if(e.target.closest('.gallery-delete'))return;openViewer(item);});}else{const pct=item.total?Math.round((item.filledCount||0)/item.total*100):0;div.innerHTML=`<img src="${img}" alt="未完成作品" loading="lazy"><div class="gi-badges"><span class="gi-badge">🎨 ${pct}%</span>${modeBadge}</div><button class="gallery-delete" aria-label="刪除">✕</button><div class="gi-progress"><i style="width:${pct}%"></i></div>${meta}<button class="gi-resume" type="button">▶ 繼續完成</button>`;div.addEventListener('click',e=>{if(e.target.closest('.gallery-delete'))return;resumeWork(item.id);});}div.querySelector('.gallery-delete').addEventListener('click',e=>{e.stopPropagation();deleteWork(item.id);});return div;}
+function makeGalleryCard(item){const div=document.createElement('div');div.className='gallery-item';const W=item.cols||'?',H=item.rows||'?',d=depthInfo(item.depth||16);const img=urlFor(item,'preview');const modeBadge=item.mode==='online'?`<span class="gi-badge lv">Lv.${item.level}</span>`:item.mode==='search'?`<span class="gi-badge sq">🔍 ${esc(item.query||'搜尋')}</span>`:`<span class="gi-badge ph">📷</span>`;const meta=`<div class="gallery-meta"><b>${item.date||''}</b><span>${W}×${H}</span><small style="color:${d.c}">${d.icon} ${d.name}・${fmt(item.colors||0)} 色${item.time?'・⏱'+item.time:''}</small></div>`;if(item.completed){div.innerHTML=`<img src="${img}" alt="作品" loading="lazy"><div class="gi-badges"><span class="gi-badge done">✅ 完成</span>${modeBadge}</div><button class="gallery-delete" aria-label="刪除">✕</button>${meta}`;div.addEventListener('click',e=>{if(e.target.closest('.gallery-delete'))return;openViewer(item);});}else{const pct=item.total?Math.round((item.filledCount||0)/item.total*100):0;div.innerHTML=`<img src="${img}" alt="未完成作品" loading="lazy"><div class="gi-badges"><span class="gi-badge">🎨 ${pct}%</span>${modeBadge}</div><button class="gallery-delete" aria-label="刪除">✕</button><div class="gi-progress"><i style="width:${pct}%"></i></div>${meta}<button class="gi-resume" type="button">▶ 繼續完成</button>`;div.addEventListener('click',e=>{if(e.target.closest('.gallery-delete'))return;resumeWork(item.id);});}div.querySelector('.gallery-delete').addEventListener('click',e=>{e.stopPropagation();deleteWork(item.id);});return div;}
 async function deleteWork(id){const ok=await askConfirm({title:'🗑️ 刪除作品',desc:'確定要刪除這幅作品嗎？刪除後可在提示中復原。',ok:'刪除'});if(!ok)return;const entry=loadWorks().find(w=>w.id===id);await removeWork(id);if(currentWork&&currentWork.id===id)currentWork=null;if($('screen-gallery').classList.contains('active'))showGallery();refreshResumeBtn();updateStorageUI();if(entry)showToast('🗑️ 已刪除，已釋放空間',{label:'復原',fn:async()=>{try{await dbPut(entry);cacheUpsert(entry);showToast('✅ 已復原');if($('screen-gallery').classList.contains('active'))showGallery();refreshResumeBtn();updateStorageUI();refreshQuota();}catch(e){showToast('⚠️ 復原失敗：空間不足');}}});}
 let viewerItem=null;const V={s:1,tx:0,ty:0};
-function openViewer(item){viewerItem=item;const img=$('viewer-img');img.src=urlFor(item,'puzzle')||urlFor(item,'preview');const d=item.exact?EXACT_TIER:depthInfo(item.depth||16);$('viewer-title').textContent=`${item.cols}×${item.rows}・${fmt(item.colors||0)} 色・${d.name}`;$('viewer-sub').textContent=`${item.date||''}・用時 ${item.time||'--'}・${workLabel(item)}`;V.s=1;V.tx=0;V.ty=0;img.style.transform='';showOverlay('overlay-viewer');}
+function openViewer(item){viewerItem=item;const img=$('viewer-img');img.src=urlFor(item,'puzzle')||urlFor(item,'preview');const d=depthInfo(item.depth||16);$('viewer-title').textContent=`${item.cols}×${item.rows}・${fmt(item.colors||0)} 色・${d.name}`;$('viewer-sub').textContent=`${item.date||''}・用時 ${item.time||'--'}・${workLabel(item)}`;V.s=1;V.tx=0;V.ty=0;img.style.transform='';showOverlay('overlay-viewer');}
 function applyV(){const img=$('viewer-img'),st=$('viewer-stage');const ew=img.offsetWidth*V.s,eh=img.offsetHeight*V.s;const mx=Math.max(0,(ew-st.clientWidth)/2),my=Math.max(0,(eh-st.clientHeight)/2);V.tx=clamp(V.tx,-mx,mx);V.ty=clamp(V.ty,-my,my);img.style.transform=`translate(${V.tx}px,${V.ty}px) scale(${V.s})`;}
 function setupViewer(){const st=$('viewer-stage'),vPts=new Map();let vPinch=null,vPan=null,vLastTap=0;st.addEventListener('pointerdown',e=>{try{st.setPointerCapture(e.pointerId);}catch(err){}vPts.set(e.pointerId,{x:e.clientX,y:e.clientY});if(vPts.size===1)vPan={x:e.clientX,y:e.clientY,tx:V.tx,ty:V.ty};else if(vPts.size===2){vPan=null;const[a,b]=[...vPts.values()],rect=st.getBoundingClientRect(),img=$('viewer-img');const mid={x:(a.x+b.x)/2-rect.left,y:(a.y+b.y)/2-rect.top};const ew=img.offsetWidth*V.s,dx=(rect.width-ew)/2+V.tx,dy=(rect.height-img.offsetHeight*V.s)/2+V.ty;vPinch={d0:Math.hypot(a.x-b.x,a.y-b.y)||1,s0:V.s,u:(mid.x-dx)/V.s,v:(mid.y-dy)/V.s};}});st.addEventListener('pointermove',e=>{if(!vPts.has(e.pointerId))return;const p=vPts.get(e.pointerId);p.x=e.clientX;p.y=e.clientY;const r=st.getBoundingClientRect(),img=$('viewer-img');if(vPinch&&vPts.size>=2){const[a,b]=[...vPts.values()],d=Math.hypot(a.x-b.x,a.y-b.y)||1;const mid={x:(a.x+b.x)/2-r.left,y:(a.y+b.y)/2-r.top};V.s=clamp(vPinch.s0*d/vPinch.d0,1,12);V.tx=mid.x-vPinch.u*V.s-(r.width-img.offsetWidth*V.s)/2;V.ty=mid.y-vPinch.v*V.s-(r.height-img.offsetHeight*V.s)/2;applyV();}else if(vPan&&vPts.size===1){V.tx=vPan.tx+(e.clientX-vPan.x);V.ty=vPan.ty+(e.clientY-vPan.y);applyV();}});const vEnd=e=>{if(!vPts.has(e.pointerId))return;const wasOne=vPts.size===1;vPts.delete(e.pointerId);if(vPts.size<2)vPinch=null;if(vPts.size===0){if(wasOne){const now=Date.now();if(now-vLastTap<320){V.s=1;V.tx=0;V.ty=0;applyV();}vLastTap=now;}vPan=null;}};st.addEventListener('pointerup',vEnd);st.addEventListener('pointercancel',vEnd);st.addEventListener('wheel',e=>{e.preventDefault();V.s=clamp(V.s*(e.deltaY<0?1.18:1/1.18),1,12);applyV();},{passive:false});st.addEventListener('contextmenu',e=>e.preventDefault());}
 function downloadViewerItem(){if(!viewerItem)return;const u=urlFor(viewerItem,'puzzle')||urlFor(viewerItem,'preview');downloadURL(u,`SnapPaint_${viewerItem.id}.png`);showToast('⬇️ 已下載');}
