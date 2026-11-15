@@ -1,10 +1,10 @@
 # 🎨 一拍即玩 SnapPaint IV
 
-**Paint-by-numbers from your photos, infinite levels, or a simple text prompt.**  
+**Paint-by-numbers from your photos, infinite online levels, or a text prompt.**  
 One HTML file. Zero dependencies. Type `sunset`, `貓`, or `城市`, pick a result, and paint it cell by cell.
 
 [![Live Demo](https://img.shields.io/badge/▶_Play_Live-SnapPaint_IV-5EA0F2?style=for-the-badge)](https://s250038-hub.github.io/Snap-Paint-IV/)
-[![Version](https://img.shields.io/badge/version-3.3-B07CF7?style=for-the-badge)](#-version-history)
+[![Version](https://img.shields.io/badge/version-3.3.1-B07CF7?style=for-the-badge)](#-version-history)
 [![Single File](https://img.shields.io/badge/single_file-index.html-35D07F?style=for-the-badge)](#-quick-start)
 [![No Dependencies](https://img.shields.io/badge/dependencies-0-FFC53D?style=for-the-badge)](#-quick-start)
 
@@ -12,16 +12,15 @@ One HTML file. Zero dependencies. Type `sunset`, `貓`, or `城市`, pick a resu
 
 ---
 
-## 🆕 What's new in v3.3
+## 🆕 v3.3.1 — Color integrity fix
 
-- **🔍 Prompt image search** — type a keyword and get real matching images
-- **Wikimedia Commons** as the search backend (no API key required)
-- **Thumbnail result strip** — tap any result to preview and play it
-- **Search grid size selector** — 小 64 / 中 120 / 大 200
-- **Offline themed fallback** — keyword-aware procedural art when the network fails
-- **Search works are saved** with their query and result index
-- **"Next image" flow** after completing a searched picture
-- **Gallery badges** show the search query instead of a level number
+Fixed a palette display bug where switching puzzles — especially **prompt search → next image** — could show colors from the previous puzzle in the palette strip.
+
+- Palette DOM cache is now cleared whenever a new puzzle is entered
+- Transient board state (dirty rectangles, flashes, last painted cell) is reset between puzzles
+- Palette dots, brush color, tool ring, and saved artwork all read from the same quantized palette
+
+If you previously saw a mismatch between the palette dot and the painted cell in search mode, update to **v3.3.1**.
 
 ---
 
@@ -384,6 +383,24 @@ reconstructed = round(q × 255 / (L − 1))
 
 The palette is sorted by frequency, then by color key, so large regions appear first and numbering is deterministic.
 
+### Single source of truth for color
+
+Every visible color in a puzzle comes from one palette:
+
+```text
+P.pal.keys[pi] + P.pal.CH  →  [r, g, b]
+```
+
+Used consistently by:
+
+- Palette dots
+- Brush and bucket paint
+- Tool ring / cursor tint
+- Target PNG export
+- Confetti color sampling
+
+The palette DOM cache is cleared on every new puzzle and on reset, so dots can never carry over colors from a previous image.
+
 ### Exact resume
 
 The saved puzzle image is a **lossless PNG** of quantized colors. Re-quantizing those exact RGB values reproduces the same keys, totals, and palette order, so color numbers never drift after resume.
@@ -483,6 +500,7 @@ Targets desktop Chrome / Edge / Firefox / Safari and mobile Chrome / iOS Safari.
 
 | Symptom | Fix |
 |---|---|
+| Palette dot color does not match painted cell | Update to **v3.3.1**. The palette cache is now cleared between puzzles. |
 | Search returns no usable images | The app falls back to offline themed art. Try a broader or English keyword. |
 | Online preview fails | Auto mode falls back to offline art. You can also set Source to **Offline** or press Retry. |
 | “儲存空間不足” | Open the gallery and delete old works. Deletion can be undone from the toast. |
@@ -543,6 +561,11 @@ Entry file: index.html
 ---
 
 ## 📜 Version history
+
+### v3.3.1
+- Fixed palette color mismatch when switching puzzles, most visible in prompt-search mode
+- Palette DOM cache is cleared on every new puzzle and on reset
+- Transient board state is reset between puzzles
 
 ### v3.3
 - Prompt image search via Wikimedia Commons
